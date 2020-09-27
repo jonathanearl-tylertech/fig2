@@ -1,39 +1,31 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import styled from 'styled-components'
 
 import FriendFeed from './components/FriendFeed';
+import NavBar from './components/NavBar'
 import './App.css';
 
 function App() {
   return (
     <Router>
-      <div>
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            <FriendFeed />
-          </Route>
-        </Switch>
+      <Container>
+        <Main>
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/users">
+              <Users />
+            </Route>
+            <Route path="/">
+              <FriendFeed />
+            </Route>
+          </Switch>
+        </Main>
+        <NavBar></NavBar>
 
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">FriendFeed</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      </Container>
     </Router>
   );
 }
@@ -47,3 +39,15 @@ function About() {
 function Users() {
   return <h2>Users</h2>;
 }
+
+const Container = styled.div`
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`
+const Main = styled.main`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`
