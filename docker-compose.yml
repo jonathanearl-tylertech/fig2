@@ -1,13 +1,13 @@
 version: "2"
 services:
-    api:
+    feed-api:
         build:
-            context: ./server
+            context: ./feed
         ports: 
             - 5001:5001
         volumes:
             - /app/node_modules
-            - ./server:/app
+            - ./feed:/app
     client:
         build:
             context: ./client

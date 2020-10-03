@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "feed",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
