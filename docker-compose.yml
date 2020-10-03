@@ -1,13 +1,6 @@
 version: "2"
 services:
-    feed-api:
-        build:
-            context: ./feed
-        ports: 
-            - 5001:5001
-        volumes:
-            - /app/node_modules
-            - ./feed:/app
+
     client:
         build:
             context: ./client
@@ -17,3 +10,17 @@ services:
             - /app/node_modules
             - ./client:/app
         stdin_open: true
+    feed-api:
+        build:
+            context: ./feed
+        ports: 
+            - 5001:5001
+        volumes:
+            - /app/node_modules
+            - ./feed:/app
+        depends_on:
+            - db
+    db:
+        image: mongo:4.4
+        ports:
+            - 27017:27017
