@@ -1,0 +1,19 @@
+version: "2"
+services:
+    api:
+        build:
+            context: ./server
+        ports: 
+            - 5001:5001
+        volumes:
+            - /app/node_modules
+            - ./server:/app
+    client:
+        build:
+            context: ./client
+        ports:
+            - 3000:3000
+        volumes: 
+            - /app/node_modules
+            - ./client:/app
+        stdin_open: true
