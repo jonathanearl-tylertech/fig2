@@ -12,12 +12,12 @@ services:
         stdin_open: true
     feed-api:
         build:
-            context: ./feed
+            context: ./server
         ports: 
             - 5001:5001
         volumes:
             - /app/node_modules
-            - ./feed:/app
+            - ./server:/app
         depends_on:
             - db
     db:
