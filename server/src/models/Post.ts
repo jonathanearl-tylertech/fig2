@@ -10,13 +10,8 @@ interface Post extends Document {
 }
 
 const PostSchema = new Schema({
-    author: { type: Types.ObjectId, ref: 'author' },
-    caption: String,
-    imgUrls: [String],
-    createdAt: { type: Date, default: Date.now },
-    likes: [{ type: Types.ObjectId, ref: 'author' }],
-    comments: [{ type: Types.ObjectId, ref: 'comment' }],
+    
 });
-export const Post = mongoose.model<Post>('post', PostSchema);
+export const Post = mongoose.model('post', PostSchema);
 
 
