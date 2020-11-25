@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { connect } from 'mongoose';
-
+import * as cors from 'cors';
 import { Post } from './models/Post';
 import { Author, IAuthor } from './models/Author';
 
@@ -15,18 +15,17 @@ import { Author, IAuthor } from './models/Author';
 
 
     const app = express();
+    app.use(cors.default())
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
-    app.get('/post', async (req, res) => {
-        // const author = await new Author({ name: 'fred', email: 'earl.jonathan@gmail.com', message: 'i want it that way, tell me why'})
-        //     .save()
-        // console.log(author);
-        const authors = await Author.find()
-        res.json(authors);
+    app.get('/posts', async (req, res) => {
+        const posts = await Post.find();
+        console.log(posts[0]);
+        res.json(posts);
     });
 
-    app.get('/author', async (req, res) => {
+    app.get('/authors', async (req, res) => {
         const authors = await Author.find();
         const response = authors
             .map(authors => authors.toJSON())
@@ -42,7 +41,7 @@ import { Author, IAuthor } from './models/Author';
         res.json(response); 
     });
 
-    app.get('/author/:id', async (req, res) => {
+    app.get('/authors/:id', async (req, res) => {
         const { id } = req.params
         console.log(id);
         const author = await Author.findById(id);
@@ -52,7 +51,7 @@ import { Author, IAuthor } from './models/Author';
         res.json(author?.toJSON()); 
     });
 
-    app.post('/author', async (req, res) => {
+    app.post('/authors', async (req, res) => {
         //validate
         const author = new Author(req.body);
         console.log(author.id);

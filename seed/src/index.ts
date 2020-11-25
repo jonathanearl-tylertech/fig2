@@ -12,10 +12,8 @@ import * as fs from 'fs';
         const posts = [];
     
         for (let i = 1; i < 25; i++) {
-            const post = {...postTemplate};
             const author = getRandomAuthor();
-            post.author = author;
-            post._id = i;
+            const post = {...postTemplate, "author": {...author}};
             posts.push(post);
         }
         
