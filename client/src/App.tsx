@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import FriendFeed from './components/FriendFeed';
 import NavBar from './components/NavBar'
 import './App.css';
+import Explore from './components/Explore';
 
 function App() {
   return (
@@ -12,6 +13,9 @@ function App() {
       <Container>
         <Main>
           <Switch>
+            <Route path="/explore">
+              <Explore />
+            </Route>
             <Route path="/about">
               <About />
             </Route>
