@@ -28,7 +28,9 @@ jobs:
         cd client
         npm ci
     - name: Build client
-      run: npm run build
+      run: |
+        cd client
+        npm run build
     - name: Echo folder
       run: ls client/build
     - name: Deploy client to fig.jonathanearl.io
