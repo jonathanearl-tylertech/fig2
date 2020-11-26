@@ -5,7 +5,7 @@ function Explore() {
     console.log('posts', posts);
     const list = posts.map((post: any, index) => {
         console.log(post);
-        return <div key={index}><img src={post.img.urls[0]} alt='user post image' /></div>;
+        return <div key={index}><img src={post.img.urls[0]} alt='user post' /></div>;
     })
     useEffect(() => {
         fetch('http://localhost:5001/posts')
