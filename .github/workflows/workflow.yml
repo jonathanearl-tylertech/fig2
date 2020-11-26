@@ -10,10 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
         node-version: '14.x'
+
     - name: Cache Node.js modules
       uses: actions/cache@v2
       with:
@@ -23,16 +25,17 @@ jobs:
         restore-keys: |
           ${{ runner.OS }}-node-
           ${{ runner.OS }}-
+
     - name: Install dependencies
       run: |
         cd client
         npm ci
+
     - name: Build client
       run: |
         cd client
         npm run build
-    - name: Echo folder
-      run: ls client/build
+
     - name: Deploy client to fig.jonathanearl.io
       run: |
         aws s3 sync ./client/build s3://fig.jonathanearl.io
