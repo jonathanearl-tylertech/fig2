@@ -25,9 +25,11 @@ jobs:
           ${{ runner.OS }}-
     - name: Install dependencies
       run: npm ci
-    - name: build
+    - name: Build client
       run: npm run build
-    - name: Deploy to fig.jonathanearl.io
+    - name: Echo folder
+      run: ls client/build
+    - name: Deploy client to fig.jonathanearl.io
       uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --follow-symlinks --delete
