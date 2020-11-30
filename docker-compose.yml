@@ -4,6 +4,8 @@ services:
         image: nginx:latest
         volumes:
             - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
+            - ./reverse-proxy/localhost.crt:/etc/nginx/localhost.crt
+            - ./reverse-proxy/localhost.key:/etc/nginx/localhost.key
         ports:
             - 80:80
             - 443:443
