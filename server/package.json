@@ -2,16 +2,18 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
   "scripts": {
+    "start": "tsc & node ./dist/server.js",
     "build": "tsc",
-    "start": "tsc & node .",
-    "dev": "tsc -w & nodemon ."
+    "dev": "tsc -w & nodemon ./dist/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/aws-serverless-express": "^3.3.3",
+    "@vendia/serverless-express": "^3.4.0",
+    "aws-serverless-express": "^3.3.8",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",

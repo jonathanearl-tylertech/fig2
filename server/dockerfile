@@ -1,10 +1,13 @@
-FROM node:lts
-
+FROM node:lts as base
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm ci
-
 COPY .  /app
 
+
+FROM base as dev
 CMD ["npm", "run", "dev"]
+
+
+FROM base as prod
+CMD [ "npm", "run", "start" ]

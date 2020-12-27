@@ -14,6 +14,7 @@ services:
     api:
         build:
             context: ./server
+            target: dev
         ports: 
             - 5001:5001
         volumes:
