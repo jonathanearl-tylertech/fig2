@@ -10,6 +10,9 @@ function NavBar() {
                     <Link to="/">FriendFeed</Link>
                 </Li>
                 <Li>
+                    <Link to="/explore">Explore</Link>
+                </Li>
+                <Li>
                     <Link to="/about">About</Link>
                 </Li>
                 <Li>
