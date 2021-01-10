@@ -67,19 +67,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = __importStar(require("fs"));
-var mongoose = require('mongoose');
-var id = new mongoose.mongo.ObjectID('123412341234123412341234');
-console.log(id);
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var authorsString, authors, generatePosts, getRandomAuthor, posts;
+    var usersString, users, generatePosts, getRandomUser, posts;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, fs.readFileSync(__dirname + "/../input_data/authors.json", 'utf-8')];
             case 1:
-                authorsString = _a.sent();
-                authors = JSON.parse(authorsString);
+                usersString = _a.sent();
+                users = JSON.parse(usersString);
                 generatePosts = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var postString, postTemplate, posts, i, author, post;
+                    var postString, postTemplate, posts, i, user, post;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, fs.readFileSync(__dirname + "/../input_data/post.json", 'utf-8')];
@@ -88,20 +85,20 @@ console.log(id);
                                 postTemplate = JSON.parse(postString);
                                 posts = [];
                                 for (i = 1; i < 25; i++) {
-                                    author = getRandomAuthor();
-                                    post = __assign(__assign({}, postTemplate), { "author": __assign({}, author) });
+                                    user = getRandomUser();
+                                    post = __assign(__assign({}, postTemplate), { "user": user._id });
                                     posts.push(post);
                                 }
                                 return [2 /*return*/, posts];
                         }
                     });
                 }); };
-                getRandomAuthor = function () {
-                    var index = Math.floor(Math.random() * authors.length);
-                    return authors[index];
+                getRandomUser = function () {
+                    var index = Math.floor(Math.random() * users.length);
+                    return users[index];
                 };
-                console.log('writing authors');
-                return [4 /*yield*/, fs.writeFileSync(__dirname + "/../mongodb/authors.json", JSON.stringify(authors), 'utf-8')];
+                console.log('writing users');
+                return [4 /*yield*/, fs.writeFileSync(__dirname + "/../mongodb/users.json", JSON.stringify(users), 'utf-8')];
             case 2:
                 _a.sent();
                 console.log('generating posts');
