@@ -1,0 +1,12 @@
+FROM node:lts as builder
+WORKDIR /build
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run start
+
+FROM mongo:4.4
+WORKDIR /seed
+COPY --from=builder /build/mongodb ./mongodb
+COPY ./seed.sh .
+CMD [ "/bin/bash", "/seed/seed.sh" ]

@@ -33,11 +33,8 @@ services:
             - seed
 
     seed:
-        image: mongo:4.4
-        volumes:
-            - ./seed:/seed
-        command: 
-            - /seed/seed.sh
+        build:
+            context: ./seed
         depends_on:
             - db
 
