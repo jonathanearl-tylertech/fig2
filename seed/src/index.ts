@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 
 (async () => {
-    const authorsString = await fs.readFileSync(`${__dirname}/../input_data/authors.json`, 'utf-8');
-    const authors = JSON.parse(authorsString);
+    const usersString = await fs.readFileSync(`${__dirname}/../input_data/authors.json`, 'utf-8');
+    const users = JSON.parse(usersString);
 
 
     const generatePosts = async () => {
@@ -12,21 +12,21 @@ import * as fs from 'fs';
         const posts = [];
     
         for (let i = 1; i < 25; i++) {
-            const author = getRandomAuthor();
-            const post = {...postTemplate, "author": {...author}};
+            const user = getRandomUser();
+            const post = {...postTemplate, "user": user._id};
             posts.push(post);
         }
         
         return posts;
     }
     
-    const getRandomAuthor = () => {
-        const index = Math.floor(Math.random() * authors.length);
-        return authors[index];
+    const getRandomUser = () => {
+        const index = Math.floor(Math.random() * users.length);
+        return users[index];
     }
 
-    console.log('writing authors');
-    await fs.writeFileSync(`${__dirname}/../mongodb/authors.json`, JSON.stringify(authors), 'utf-8');
+    console.log('writing users');
+    await fs.writeFileSync(`${__dirname}/../mongodb/users.json`, JSON.stringify(users), 'utf-8');
 
     console.log('generating posts');
     const posts = await generatePosts();

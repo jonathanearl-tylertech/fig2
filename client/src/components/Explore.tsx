@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 function Explore() {
     const [posts, setPosts] = useState([]);
@@ -15,10 +16,17 @@ function Explore() {
             });
     }, [])
     return (
-        <div>
-            <div>Explore</div>
+        <Main>
+            <div>Explore!</div>
             {list}
-        </div>
+        </Main>
     );
 }
 export default Explore;
+
+const Main = styled.main`
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 44px);
+  overflow-y: scroll;
+`

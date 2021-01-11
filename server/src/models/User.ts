@@ -1,16 +1,16 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IAuthor extends Document{
+export interface IUser extends Document{
     name: string,
     email: string,
     message: string,
     createdAt: Date
 }
 
-const AuthorSchema = new Schema<IAuthor>({
+const UserSchema = new Schema<IUser>({
     name: String,
     email: String,
     message: String,
     createdAt: { type: Date, default: Date.now },
 });
-export const Author = mongoose.model<IAuthor>('author', AuthorSchema);
+export const User = mongoose.model<IUser>('user', UserSchema);

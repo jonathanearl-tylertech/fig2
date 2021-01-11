@@ -1,5 +1,17 @@
 version: "2"
 services:
+    db:
+        image: mongo:4.4
+        ports:
+            - 27017:27017
+
+    seed:
+        build:
+            context: ./seed
+        volumes:
+            - ./seed/output_data:/seed/output_data
+        depends_on:
+            - db
 
     client:
         build:
@@ -11,28 +23,35 @@ services:
             - ./client:/app
         stdin_open: true
     
-    db:
-        image: mongo:4.4
+    auth:
+        build:
+            context: ./auth
         ports:
-            - 27017:27017
-
-    seed:
-        image: mongo:4.4
+            - 8080:8080
         volumes:
-            - ./seed:/seed
-        command: 
-            - /seed/seed.sh
-        depends_on:
-            - db
-        
+            - /app/node_modules
+            - ./auth:/app
 
     api:
         build:
             context: ./server
+            target: dev
         ports: 
             - 5001:5001
         volumes:
             - /app/node_modules
             - ./server:/app
+
+    reverse-proxy:
+        image: nginx:latest
+        volumes:
+            - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
+            - ./reverse-proxy/localhost.crt:/etc/nginx/localhost.crt
+            - ./reverse-proxy/localhost.key:/etc/nginx/localhost.key
+        ports:
+            - 80:80
+            - 443:443
         depends_on:
-            - seed
+            - api
+            - client
+            - auth

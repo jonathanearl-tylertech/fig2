@@ -1,16 +1,22 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
+const { ObjectId } = Schema.Types;
 
 interface Post extends Document {
-    author: Types.ObjectId,
-    caption: string,
-    imgUrls: string[],
+    author: String,
+    caption: String,
+    imgUrls: String[],
     createdAt: Date,
-    likes: Types.ObjectId[],
-    comments: Types.ObjectId[]
+    likes: String[],
+    comments: String[]
 }
 
 const PostSchema = new Schema({
-    
+    author: { type: ObjectId, ref: 'users'},
+    caption: String,
+    imgUrls: [String],
+    createdAt: { type: Date, default: Date.now },
+    likes: [{ type: ObjectId, ref: 'users'}],
+    comments: [{ type: ObjectId, ref: 'comments'}]
 });
 export const Post = mongoose.model('post', PostSchema);
 

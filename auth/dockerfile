@@ -4,7 +4,6 @@ COPY package*.json ./
 RUN npm ci
 COPY .  /app
 
-
 FROM base as dev
 CMD ["npm", "run", "dev"]
 
