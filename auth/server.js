@@ -55,9 +55,9 @@ app.use((err, req, res, next) => {
         return;
     }
     next();
-})
+});
 
-const PORT = 8080 || process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 (async () => {
     const issuer = await Issuer.discover(oidc.discoverUrl);
@@ -70,5 +70,6 @@ const PORT = 8080 || process.env.PORT;
     });
     app.listen(PORT, () => console.log(`now listening on localhost:${PORT}`))
 })();
+
 
 

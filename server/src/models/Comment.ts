@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
 
-const PostSchema = new Schema({
+const CommentSchema = new Schema({
     author: { type: ObjectId, ref: 'author'},
     caption: String,
     imgUrls: [String],
@@ -10,4 +10,4 @@ const PostSchema = new Schema({
     likes: [{ type: ObjectId, ref: 'author'}],
     comments: [{ type: ObjectId, ref: 'comment'}],
 });
-export const Post = mongoose.model('comment', PostSchema);
+export const Comment = mongoose.model('comment', CommentSchema);
