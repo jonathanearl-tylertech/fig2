@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import styled from 'styled-components'
 
 import FriendFeed from './components/FriendFeed';
@@ -22,8 +22,11 @@ function App() {
             <Route path="/users">
               <Users />
             </Route>
-            <Route path="/">
+            <Route path="/feed">
               <FriendFeed />
+            </Route>
+            <Route path="/">
+              <Redirect from="/" to="/feed" />
             </Route>
           </Switch>
         </Main>
