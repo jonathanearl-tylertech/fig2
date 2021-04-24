@@ -1,7 +1,7 @@
 const express = require('express');
 const { Issuer, generators } = require('openid-client');
 const session = require('express-session');
-const { oidc } = require('./config.json');
+require('dotenv').config()
 
 let client;
 
@@ -18,11 +18,13 @@ app.get('/auth/callback', async (req, res, next) => {
     try {
         const params = client.callbackParams(req);
         const verify = req.session.oidc;
-        const tokenSet = await client.callback(oidc.redirect_uris, params, verify) // => Promise
+        console.log({params, verify})
+        const tokenSet = await client.callback(`http://localhost:${PORT}/auth/callback`, params, verify) // => Promise
+        console.log(tokenSet);
         req.session.regenerate((err) => {
             if(err) return next(err);
             req.session.tokenSet = tokenSet;
-            res.redirect('/');
+            res.redirect('/auth/user');
         });
     } catch (err) {
         next(err);
@@ -30,15 +32,12 @@ app.get('/auth/callback', async (req, res, next) => {
 });
 
 app.get('/auth/login', (req, res) => {
-    req.session.oidc = { 
-        code_verifier: generators.codeVerifier(),
+    req.session.oidc = {
         state: generators.state(),
         nonce: generators.nonce()
     };
     const url = client.authorizationUrl({
-        scope: 'offline_access openid email profile',
-        code_challenge: generators.codeChallenge(req.session.oidc.code_verifier),
-        code_challenge_method: 'S256',
+        scope: 'openid email profile',
         ...req.session.oidc
     });
     res.redirect(url);
@@ -60,11 +59,11 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 8080;
 
 (async () => {
-    const issuer = await Issuer.discover(oidc.discoverUrl);
+    const issuer = await Issuer.discover(process.env.OIDC_DISCOVERYURL);
     client = new issuer.Client({
-        client_id: oidc.client_id,
-        token_endpoint_auth_method: 'none',
-        redirect_uris: [oidc.redirect_uris],
+        client_id: process.env.OIDC_CLIENTID,
+        client_secret: process.env.OIDC_CLIENTSECRET,
+        redirect_uris: [`http://localhost:${PORT}/auth/callback`],
         response_types: ['code'],
         scope: 'openid email profile',
     });

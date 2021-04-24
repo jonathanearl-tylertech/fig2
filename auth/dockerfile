@@ -4,6 +4,8 @@ COPY package*.json ./
 RUN npm ci
 COPY .  /app
 
+EXPOSE 8080
+
 FROM base as dev
 CMD ["npm", "run", "dev"]
 

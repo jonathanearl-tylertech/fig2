@@ -1,8 +1,0 @@
-{
-    
-    "oidc": {
-        "discoverUrl": "https://login.jonathanearl.io/oauth2/default",
-        "client_id": "0oaml463yoeViVg6B4x6",
-        "redirect_uris": "https://jonathanearl.io/auth/callback"
-    }
-}
