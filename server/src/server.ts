@@ -7,43 +7,43 @@ import { Post } from './models/Post';
 import { Comment } from './models/Comment';
 
 connect('mongodb://db/fig', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true
 });
 
 
 const app = express();
-app.use(cors.default())
+app.use(cors.default({ origin: 'https://fig.jonathanearl.localhost' }))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/posts', async (req, res) => {
-    const posts = await Post.find().exec();
-    res.json(posts);
+  const posts = await Post.find().exec();
+  res.json(posts);
 });
 
 app.get('/users', async (req, res) => {
-    const users = await User.find().exec();
-    res.json(users);
+  const users = await User.find().exec();
+  res.json(users);
 });
 
 app.get('/users/:id', async (req, res) => {
-    const { id } = req.params
-    console.log(id);
-    const user = await User.findById(id).exec();
-    if (user === null) {
-        return res.status(404);
-    }
-    res.json(user.toJSON());
+  const { id } = req.params
+  console.log(id);
+  const user = await User.findById(id).exec();
+  if (user === null) {
+    return res.status(404);
+  }
+  res.json(user.toJSON());
 });
 
 app.post('/users', async (req, res) => {
-    //validate
-    const user = new User(req.body);
-    user.save();
-    res.json(user.toJSON());
+  //validate
+  const user = new User(req.body);
+  user.save();
+  res.json(user.toJSON());
 });
 
 app.listen(process.env.PORT, () => console.log(`listening on port ${process.env.PORT}`));
