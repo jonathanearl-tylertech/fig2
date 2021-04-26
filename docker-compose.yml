@@ -1,9 +1,46 @@
-version: "2"
+version: "3"
 services:
-    db:
-        image: mongo:4.4
+    api-gateway:
+        image: nginx:latest
+        restart: unless-stopped
+        volumes:
+            - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+            - ./api-gateway/localhost.crt:/etc/nginx/localhost.crt
+            - ./api-gateway/localhost.key:/etc/nginx/localhost.key
         ports:
-            - 27017:27017
+            - 80:80
+            - 443:443
+
+    client:
+        build:
+            context: ./client
+        volumes: 
+            - /app/node_modules
+            - ./client:/app
+        ports:
+            - 8080:8080
+        env_file:
+            - ./client/.env
+        stdin_open: true
+
+    auth:
+        build:
+            context: ./auth
+        volumes:
+            - /app/node_modules
+            - ./auth:/app
+        env_file:
+            - ./auth/.env
+
+    api:
+        build:
+            context: ./server
+            target: dev
+        env_file:
+            - ./server/.env
+        volumes:
+            - /app/node_modules
+            - ./server:/app
 
     seed:
         build:
@@ -13,45 +50,7 @@ services:
         depends_on:
             - db
 
-    client:
-        build:
-            context: ./client
+    db:
+        image: mongo:4.4
         ports:
-            - 3000:3000
-        volumes: 
-            - /app/node_modules
-            - ./client:/app
-        stdin_open: true
-    
-    auth:
-        build:
-            context: ./auth
-        ports:
-            - 8080:8080
-        volumes:
-            - /app/node_modules
-            - ./auth:/app
-
-    api:
-        build:
-            context: ./server
-            target: dev
-        ports: 
-            - 5001:5001
-        volumes:
-            - /app/node_modules
-            - ./server:/app
-
-    reverse-proxy:
-        image: nginx:latest
-        volumes:
-            - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
-            - ./reverse-proxy/localhost.crt:/etc/nginx/localhost.crt
-            - ./reverse-proxy/localhost.key:/etc/nginx/localhost.key
-        ports:
-            - 80:80
-            - 443:443
-        depends_on:
-            - api
-            - client
-            - auth
+            - 27017:27017
