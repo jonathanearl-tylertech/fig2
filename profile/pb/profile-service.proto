@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package profileservice;
+option go_package = "./";
+
+service ProfileService {
+  rpc GetProfile(Id) returns (Profile) {}
+}
+
+message Id {
+  int32 id = 1;
+}
+
+message Profile {
+  int32 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+}
