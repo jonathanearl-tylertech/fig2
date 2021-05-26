@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package profile;
+
+option go_package = "github.com/whattheearl/fig/profile-service/protobuff";
+
+message ProfileRequest {
+  int32 id = 1;
+}
+
+message ProfileResponse {
+  int32 id = 1;
+  string first_name = 2;
+  string last_name = 3;  
+}
+
+service ProfileService {
+  rpc Get(ProfileRequest) returns (ProfileResponse);
+}
