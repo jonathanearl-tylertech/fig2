@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/whattheearl/fig/profile-service/protobuff"
+	pb "github.com/whattheearl/fig/profile-service/pkg/protobuff"
 	"google.golang.org/grpc"
 )
 
