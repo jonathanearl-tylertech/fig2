@@ -12,7 +12,7 @@ type Profile struct {
 	LastName string
 }
 
-func get(w http.ResponseWriter, r *http.Request) {
+func Get(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		return
 	}
@@ -25,7 +25,15 @@ func get(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(res))
 }
 
-func post(w http.ResponseWriter, r *http.Request) {
+func Create(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		return
+	}
+
+	fmt.Fprint(w, "Ok")
+}
+
+func Remove(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		return
 	}
