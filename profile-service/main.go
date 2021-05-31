@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/google/uuid"
 	pb "github.com/whattheearl/fig/profile-service/pkg/protobuff"
 	"google.golang.org/grpc"
 )
@@ -18,8 +19,13 @@ type server struct {
 }
 
 func (s *server) Get(ctx context.Context, in *pb.ProfileRequest) (*pb.ProfileResponse, error) {
+	id, err := uuid.New().MarshalBinary()
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	//
 	log.Printf("id: %v", in.Id)
-	return &pb.ProfileResponse{FirstName: "Jonathan", LastName: "Earl", Id: 1}, nil
+	return &pb.ProfileResponse{Name: "Jonathan Earl", Username: "whattheearl", Id: id, Summary: "cool cool cool"}, nil
 }
 
 func main() {
