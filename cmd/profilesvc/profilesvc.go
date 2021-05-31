@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/google/uuid"
-	pb "github.com/whattheearl/fig/profile-service/pkg/protobuff"
+	pb "github.com/whattheearl/fig/internal/profile"
 	"google.golang.org/grpc"
 )
 

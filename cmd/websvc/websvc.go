@@ -5,7 +5,8 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/whattheearl/fig/profile-service/pkg/protobuff"
+	"github.com/google/uuid"
+	pb "github.com/whattheearl/fig/internal/profile"
 	"google.golang.org/grpc"
 )
 
@@ -15,10 +16,6 @@ const (
 
 func main() {
 
-	// http.HandleFunc("/profile", get)
-	// http.HandleFunc("/profile", post)
-
-	// Set up a connection to the server.
 	conn, err := grpc.Dial(profileurl, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -30,10 +27,16 @@ func main() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := client.Get(ctx, &pb.ProfileRequest{Id: 1})
+
+	id, err := uuid.New().MarshalBinary()
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
 
-	log.Printf("Greeting: %s", r.FirstName)
+	r, err := client.Get(ctx, &pb.ProfileRequest{Id: id})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+
+	log.Printf("Greeting: %s", r.Name)
 }

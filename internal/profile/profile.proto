@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package profile;
 
-option go_package = "github.com/whattheearl/fig/profile-service/pkg/protobuff";
+option go_package = "github.com/whattheearl/fig/pkg/profile";
 
 message ProfileRequest {
   bytes   id = 1;
