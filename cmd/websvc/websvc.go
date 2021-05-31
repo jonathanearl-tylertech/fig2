@@ -16,6 +16,10 @@ const (
 
 func main() {
 
+	GetProfile()
+}
+
+func GetProfile() {
 	conn, err := grpc.Dial(profileurl, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
