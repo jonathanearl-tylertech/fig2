@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
-	pb "github.com/whattheearl/fig/internal/profile"
+	pb "github.com/whattheearl/fig/profilesvc/protobuff"
 	"google.golang.org/grpc"
 )
 
@@ -14,9 +16,14 @@ const (
 	profileurl = "0.0.0.0:50051"
 )
 
-func main() {
+func hello(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "hi")
+}
 
-	GetProfile()
+func main() {
+	http.HandleFunc("/", hello)
+	http.ListenAndServe(":8080", nil)
+	// GetProfile()
 }
 
 func GetProfile() {
@@ -32,12 +39,9 @@ func GetProfile() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	id, err := uuid.New().MarshalBinary()
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
-	}
+	id := uuid.New().String()
 
-	r, err := client.Get(ctx, &pb.ProfileRequest{Id: id})
+	r, err := client.GetById(ctx, &pb.ProfileIdRequest{Id: id})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
