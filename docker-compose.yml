@@ -1,56 +1,71 @@
 version: "3"
 services:
-    api-gateway:
-        image: nginx:latest
-        restart: unless-stopped
-        volumes:
-            - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
-            - ./api-gateway/localhost.crt:/etc/nginx/localhost.crt
-            - ./api-gateway/localhost.key:/etc/nginx/localhost.key
+    envoy:
+        image: envoyproxy/envoy-dev:1c03ddcbd6feb5ad2507ce52d9aeaf52a3156554
         ports:
-            - 80:80
-            - 443:443
+        - "10000:10000"
+        volumes:
+        - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
 
-    client:
+    webapi:
         build:
-            context: ./client
+            context: ./webapi
         volumes: 
-            - /app/node_modules
-            - ./client:/app
+            - .:/server
         ports:
-            - 8080:8080
-        env_file:
-            - ./client/.env
-        stdin_open: true
+            - 8080:8080   
 
-    auth:
-        build:
-            context: ./auth
-        volumes:
-            - /app/node_modules
-            - ./auth:/app
-        env_file:
-            - ./auth/.env
+    # api-gateway:
+    #     image: nginx:latest
+    #     restart: unless-stopped
+    #     volumes:
+    #         - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+    #         - ./api-gateway/localhost.crt:/etc/nginx/localhost.crt
+    #         - ./api-gateway/localhost.key:/etc/nginx/localhost.key
+    #     ports:
+    #         - 80:80
+    #         - 443:443
 
-    api:
-        build:
-            context: ./server
-            target: dev
-        env_file:
-            - ./server/.env
-        volumes:
-            - /app/node_modules
-            - ./server:/app
+    # client:
+    #     build:
+    #         context: ./client
+    #     volumes: 
+    #         - /app/node_modules
+    #         - ./client:/app
+    #     ports:
+    #         - 8080:8080
+    #     env_file:
+    #         - ./client/.env
+    #     stdin_open: true
 
-    seed:
-        build:
-            context: ./seed
-        volumes:
-            - ./seed/output_data:/seed/output_data
-        depends_on:
-            - db
+    # auth:
+    #     build:
+    #         context: ./auth
+    #     volumes:
+    #         - /app/node_modules
+    #         - ./auth:/app
+    #     env_file:
+    #         - ./auth/.env
 
-    db:
-        image: mongo:4.4
-        ports:
-            - 27017:27017
+    # api:
+    #     build:
+    #         context: ./server
+    #         target: dev
+    #     env_file:
+    #         - ./server/.env
+    #     volumes:
+    #         - /app/node_modules
+    #         - ./server:/app
+
+    # seed:
+    #     build:
+    #         context: ./seed
+    #     volumes:
+    #         - ./seed/output_data:/seed/output_data
+    #     depends_on:
+    #         - db
+
+    # db:
+    #     image: mongo:4.4
+    #     ports:
+    #         - 27017:27017
