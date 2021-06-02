@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	pb "github.com/whattheearl/fig/profilesvc/protobuff"
+	pb "github.com/whattheearl/fig/profilesvc/pb"
 	"google.golang.org/grpc"
 )
 
