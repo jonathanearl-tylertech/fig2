@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/google/uuid"
-	pb "github.com/whattheearl/fig/internal/profile"
+	pb "github.com/whattheearl/fig/profilesvc/protobuff"
 	"google.golang.org/grpc"
 )
 
@@ -18,14 +18,23 @@ type server struct {
 	pb.UnimplementedProfileServiceServer
 }
 
-func (s *server) Get(ctx context.Context, in *pb.ProfileRequest) (*pb.ProfileResponse, error) {
-	id, err := uuid.New().MarshalBinary()
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	//
-	log.Printf("id: %v", in.Id)
+func Get() (*pb.ProfileResponse, error) {
+	id := uuid.New().String()
+	log.Printf("returning fake user")
 	return &pb.ProfileResponse{Name: "Jonathan Earl", Username: "whattheearl", Id: id, Summary: "cool cool cool"}, nil
+}
+
+func (s *server) GetById(ctx context.Context, in *pb.ProfileIdRequest) (*pb.ProfileResponse, error) {
+	log.Printf("looking up user by id %v", in.Id)
+	return Get()
+}
+
+func (s *server) GetByEmail(ctx context.Context, in *pb.ProfileEmailRequest) (*pb.ProfileResponse, error) {
+	return Get()
+}
+
+func (s *server) GetByUsername(ctx context.Context, in *pb.ProfileUsernameRequest) (*pb.ProfileResponse, error) {
+	return Get()
 }
 
 func main() {
