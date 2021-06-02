@@ -13,7 +13,17 @@ services:
         volumes: 
             - .:/server
         ports:
-            - 8080:8080   
+            - 8080:8080
+        depends_on:
+            - profilesvc
+    
+    profilesvc:
+        build:
+            context: ./profilesvc
+        volumes: 
+            - .:/server
+        ports:
+            - 50051:50051
 
     # api-gateway:
     #     image: nginx:latest

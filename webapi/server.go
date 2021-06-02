@@ -13,20 +13,24 @@ import (
 )
 
 const (
-	profileurl = "0.0.0.0:50051"
+	profileurl = "profilesvc:50051"
 )
 
 func hello(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "hi")
+	log.Println("hello")
+	log.Println("email: ", GetProfile())
+	fmt.Fprintln(w, GetProfile())
+	// fmt.Fprintln(w, "hi")
 }
 
 func main() {
+	// GetProfile()
+
 	http.HandleFunc("/", hello)
 	http.ListenAndServe(":8080", nil)
-	// GetProfile()
 }
 
-func GetProfile() {
+func GetProfile() string {
 	conn, err := grpc.Dial(profileurl, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -47,4 +51,5 @@ func GetProfile() {
 	}
 
 	log.Printf("Greeting: %s", r.Name)
+	return r.String()
 }
