@@ -20,9 +20,9 @@ func main() {
 	mongo_usr := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
 	mongo_pwd := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
 	mongo_addr := os.Getenv("MONGO_ADDR")
-	mongo_db := os.Getenv("PROFILE_DB")
-	mongo_col := os.Getenv("PROFILE_COLLECTION")
-	db.Connect(mongo_usr, mongo_pwd, mongo_addr, mongo_db, mongo_col)
+	profile_db := os.Getenv("PROFILE_DB")
+	profile_collection := os.Getenv("PROFILE_COLLECTION")
+	db.Connect(mongo_usr, mongo_pwd, mongo_addr, profile_db, profile_collection)
 	addr := os.Getenv("PROFILE_ADDR")
 	svr.Run(addr)
 }

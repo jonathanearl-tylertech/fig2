@@ -1,81 +1,76 @@
 version: "3"
+
 services:
-    envoy:
-        image: envoyproxy/envoy-dev:1c03ddcbd6feb5ad2507ce52d9aeaf52a3156554
-        ports:
-        - "10000:10000"
-        volumes:
-        - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+  mongo:
+    image: mongo:4.4
+    ports:
+      - 27017:27017
+    env_file:
+      - .env
 
-    webapi:
-        build:
-            context: ./webapi
-        volumes: 
-            - .:/server
-        ports:
-            - 8080:8080
-        depends_on:
-            - profilesvc
-    
-    profilesvc:
-        build:
-            context: ./profilesvc
-        volumes: 
-            - .:/server
-        ports:
-            - 50051:50051
+  # webapi:
+  #     build:
+  #         context: ./webapi
+  #     volumes: 
+  #         - .:/server
+  #     ports:
+  #         - 8080:8080
+  
+  # profilesvc:
+  #     build:
+  #         context: ./profilesvc
+  #     volumes: 
+  #         - .:/server
+  #     ports:
+  #         - 50051:50051
 
-    # api-gateway:
-    #     image: nginx:latest
-    #     restart: unless-stopped
-    #     volumes:
-    #         - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
-    #         - ./api-gateway/localhost.crt:/etc/nginx/localhost.crt
-    #         - ./api-gateway/localhost.key:/etc/nginx/localhost.key
-    #     ports:
-    #         - 80:80
-    #         - 443:443
+  # api-gateway:
+  #     image: nginx:latest
+  #     restart: unless-stopped
+  #     volumes:
+  #         - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+  #         - ./api-gateway/localhost.crt:/etc/nginx/localhost.crt
+  #         - ./api-gateway/localhost.key:/etc/nginx/localhost.key
+  #     ports:
+  #         - 80:80
+  #         - 443:443
 
-    # client:
-    #     build:
-    #         context: ./client
-    #     volumes: 
-    #         - /app/node_modules
-    #         - ./client:/app
-    #     ports:
-    #         - 8080:8080
-    #     env_file:
-    #         - ./client/.env
-    #     stdin_open: true
+  # client:
+  #     build:
+  #         context: ./client
+  #     volumes: 
+  #         - /app/node_modules
+  #         - ./client:/app
+  #     ports:
+  #         - 8080:8080
+  #     env_file:
+  #         - ./client/.env
+  #     stdin_open: true
 
-    # auth:
-    #     build:
-    #         context: ./auth
-    #     volumes:
-    #         - /app/node_modules
-    #         - ./auth:/app
-    #     env_file:
-    #         - ./auth/.env
+  # auth:
+  #     build:
+  #         context: ./auth
+  #     volumes:
+  #         - /app/node_modules
+  #         - ./auth:/app
+  #     env_file:
+  #         - ./auth/.env
 
-    # api:
-    #     build:
-    #         context: ./server
-    #         target: dev
-    #     env_file:
-    #         - ./server/.env
-    #     volumes:
-    #         - /app/node_modules
-    #         - ./server:/app
+  # api:
+  #     build:
+  #         context: ./server
+  #         target: dev
+  #     env_file:
+  #         - ./server/.env
+  #     volumes:
+  #         - /app/node_modules
+  #         - ./server:/app
 
-    # seed:
-    #     build:
-    #         context: ./seed
-    #     volumes:
-    #         - ./seed/output_data:/seed/output_data
-    #     depends_on:
-    #         - db
+  # seed:
+  #     build:
+  #         context: ./seed
+  #     volumes:
+  #         - ./seed/output_data:/seed/output_data
+  #     depends_on:
+  #         - db
 
-    # db:
-    #     image: mongo:4.4
-    #     ports:
-    #         - 27017:27017

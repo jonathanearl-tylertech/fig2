@@ -19,11 +19,11 @@ var ctx = context.TODO()
 
 type Profile struct {
 	ID        primitive.ObjectID `bson:"_id"`
-	Email     string             `bson:"text"`
-	Name      string             `bson:"text"`
-	Username  string             `bson:"text"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
+	Email     string
+	Name      string
+	Username  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func Connect(usr string, pwd string, addr string, db string, col string) {
@@ -43,25 +43,6 @@ func Connect(usr string, pwd string, addr string, db string, col string) {
 	}
 	log.Println("Successfully connected and pinged.")
 	collection = client.Database(db).Collection(col)
-
-	log.Println("create profile")
-	profile := Profile{
-		ID:        primitive.NewObjectID(),
-		Email:     "earl.jonathan@gmail.com",
-		Name:      "jonathan earl",
-		Username:  "whattheearl",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-	CreateProfile(profile)
-	log.Println("get profile")
-
-	var me *Profile
-	me, err = GetByEmail("earl.jonathan@gmail.com")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(me, err)
 }
 
 func Disconnect() {
@@ -72,32 +53,22 @@ func Disconnect() {
 }
 
 func CreateProfile(p Profile) error {
-	log.Printf("Creating profile: %s", p)
-
-	// profile, err := GetByEmail(p.Email)
-
-	// if err != nil {
-	// 	log.Println(err)
-	// }
-
-	// if profile != nil {
-	// 	return errors.New("email already in use")
-	// }
-	var err error
-	_, err = collection.InsertOne(ctx, p)
+	_, err := collection.InsertOne(ctx, p)
 	if err != nil {
-		log.Printf("Failed to create: %s error: %s", p, err)
+		log.Printf("could not create profile %s %s", p, err)
 		return err
 	}
 
 	return nil
 }
 
-func GetByEmail(email string) (*Profile, error) {
-	log.Printf("retrieving user by email: %s", email)
-	var profile bson.M
-	err := collection.FindOne(ctx, bson.M{}).Decode(&profile)
-	fmt.Println(profile)
-
-	return nil, err
+func GetByEmail(email string) (Profile, error) {
+	var result Profile
+	filter := bson.D{{Key: "email", Value: email}}
+	err := collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		log.Println(err)
+		return Profile{}, err
+	}
+	return result, nil
 }

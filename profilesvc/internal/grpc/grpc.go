@@ -46,12 +46,14 @@ func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResp
 }
 
 func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.ProfileResponse, error) {
-	profile, err := GetMockProfile()
+	p, err := db.GetByEmail(in.Email)
+
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-		return nil, errors.New("Could not retrieve profile")
+		return nil, errors.New("could not retrieve profile")
 	}
-	return profile, nil
+
+	result := ConvertProfileToResponse(p)
+	return result, nil
 }
 
 func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb.ProfileResponse, error) {
@@ -70,18 +72,14 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileR
 	}
 
 	err := db.CreateProfile(p)
+
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-		return nil, errors.New("Could not retrieve profile")
+		log.Printf("failed to create profile: %s stack: %s", p, err)
+		return nil, err
 	}
 
-	pr := &pb.ProfileResponse{
-		Id:       p.ID.String(),
-		Email:    p.Email,
-		Name:     p.Name,
-		Username: p.Username,
-	}
-	return pr, nil
+	result := ConvertProfileToResponse(p)
+	return result, nil
 }
 
 func (s *server) RemoveById(ctx context.Context, in *pb.IdRequest) (*pb.Empty, error) {
@@ -92,4 +90,14 @@ func (s *server) RemoveById(ctx context.Context, in *pb.IdRequest) (*pb.Empty, e
 func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.ProfileResponse, error) {
 	err := errors.New("not implemented")
 	return nil, err
+}
+
+func ConvertProfileToResponse(p db.Profile) *pb.ProfileResponse {
+	result := &pb.ProfileResponse{
+		Id:       p.ID.String(),
+		Email:    p.Email,
+		Name:     p.Name,
+		Username: p.Username,
+	}
+	return result
 }
