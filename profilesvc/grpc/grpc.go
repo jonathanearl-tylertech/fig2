@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 
-	db "github.com/whattheearl/fig/profilesvc/internal/mongodb"
+	profile "github.com/whattheearl/fig/profilesvc/mongodb"
 	pb "github.com/whattheearl/fig/profilesvc/pb"
 )
 
@@ -46,7 +46,7 @@ func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResp
 }
 
 func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.ProfileResponse, error) {
-	p, err := db.GetByEmail(in.Email)
+	p, err := profile.GetByEmail(in.Email)
 
 	if err != nil {
 		return nil, errors.New("could not retrieve profile")
@@ -62,7 +62,7 @@ func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileResponse, error) {
-	p := db.Profile{
+	p := profile.Profile{
 		ID:        primitive.NewObjectID(),
 		Email:     in.Email,
 		Name:      in.Name,
@@ -71,7 +71,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileR
 		UpdatedAt: time.Now(),
 	}
 
-	err := db.CreateProfile(p)
+	err := profile.CreateProfile(p)
 
 	if err != nil {
 		log.Printf("failed to create profile: %s stack: %s", p, err)
@@ -92,7 +92,7 @@ func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.Prof
 	return nil, err
 }
 
-func ConvertProfileToResponse(p db.Profile) *pb.ProfileResponse {
+func ConvertProfileToResponse(p profile.Profile) *pb.ProfileResponse {
 	result := &pb.ProfileResponse{
 		Id:       p.ID.String(),
 		Email:    p.Email,

@@ -5,8 +5,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	svr "github.com/whattheearl/fig/profilesvc/internal/grpc"
-	db "github.com/whattheearl/fig/profilesvc/internal/mongodb"
+	svr "github.com/whattheearl/fig/profilesvc/grpc"
+	db "github.com/whattheearl/fig/profilesvc/mongodb"
 )
 
 func init() {

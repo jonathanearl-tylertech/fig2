@@ -55,7 +55,7 @@ func Disconnect() {
 func CreateProfile(p Profile) error {
 	_, err := collection.InsertOne(ctx, p)
 	if err != nil {
-		log.Printf("could not create profile %s %s", p, err)
+		log.Printf("failed to insert profile %s %s", p, err)
 		return err
 	}
 
