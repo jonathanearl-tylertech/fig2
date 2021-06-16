@@ -7,7 +7,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 
@@ -17,12 +16,6 @@ import (
 
 type server struct {
 	pb.UnimplementedProfileServiceServer
-}
-
-func GetMockProfile() (*pb.ProfileResponse, error) {
-	id := uuid.New().String()
-	log.Printf("returning fake user")
-	return &pb.ProfileResponse{Name: "Jonathan Earl", Username: "whattheearl", Id: id, Summary: "cool cool cool", Email: "superemail@super.com"}, nil
 }
 
 func Run(addr string) {
@@ -41,14 +34,22 @@ func Run(addr string) {
 }
 
 func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResponse, error) {
-	err := errors.New("not implemented")
-	return nil, err
+	p, err := profiles.GetByEmail(in.Id)
+
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("could not retrieve profile")
+	}
+
+	result := ConvertProfileToResponse(p)
+	return result, nil
 }
 
 func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.ProfileResponse, error) {
 	p, err := profiles.GetByEmail(in.Email)
 
 	if err != nil {
+		log.Println(err)
 		return nil, errors.New("could not retrieve profile")
 	}
 
@@ -58,11 +59,14 @@ func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.Profi
 
 func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb.ProfileResponse, error) {
 	p, err := profiles.GetByUsername(in.Username)
+
 	if err != nil {
+		log.Println(err)
 		return nil, errors.New("could not retrieve profile")
 	}
-	result := ConvertProfileToResponse(p)
-	return result, err
+
+	r := ConvertProfileToResponse(p)
+	return r, err
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileResponse, error) {
@@ -75,25 +79,61 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileR
 		UpdatedAt: time.Now(),
 	}
 
-	err := profiles.CreateProfile(p)
+	err := profiles.Create(p)
 
 	if err != nil {
-		log.Printf("failed to create profile: %s stack: %s", p, err)
+		log.Printf("failed to create profile: %s err: %s", p, err)
 		return nil, err
 	}
 
-	result := ConvertProfileToResponse(p)
-	return result, nil
+	r := ConvertProfileToResponse(p)
+
+	return r, nil
 }
 
 func (s *server) RemoveById(ctx context.Context, in *pb.IdRequest) (*pb.Empty, error) {
-	err := errors.New("not implemented")
+	id, err := primitive.ObjectIDFromHex(in.Id)
+
+	if err != nil {
+		log.Printf("failed to convert profile id: %s stack: %s", in, err)
+		return nil, err
+	}
+
+	err = profiles.Remove(id)
+
 	return nil, err
 }
 
 func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.ProfileResponse, error) {
-	err := errors.New("not implemented")
-	return nil, err
+	id, err := primitive.ObjectIDFromHex(in.Id)
+
+	if err != nil {
+		log.Printf("failed to convert profile id: %s err: %s", in, err)
+		return nil, err
+	}
+
+	p, err := profiles.GetById(id)
+
+	if err != nil {
+		log.Printf("failed to retrieve profile: %s err: %s", in, err)
+		return nil, err
+	}
+
+	p.Email = in.Email
+	p.Name = in.Name
+	p.Username = in.Username
+	p.UpdatedAt = time.Now()
+
+	err = profiles.UpdateById(p)
+
+	if err != nil {
+		log.Println("failed to update profile: $s", err)
+		return nil, err
+	}
+
+	r := ConvertProfileToResponse(p)
+
+	return r, err
 }
 
 func ConvertProfileToResponse(p profiles.Profile) *pb.ProfileResponse {
