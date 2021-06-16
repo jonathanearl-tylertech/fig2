@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -66,7 +67,29 @@ func Disconnect() {
 }
 
 func Create(p Profile) error {
-	_, err := collection.InsertOne(ctx, p)
+	profile, err := GetByUsername(p.Username)
+	if err != nil {
+		log.Printf("failed to retrieve profile by username %s %s", p, err)
+		return err
+	}
+
+	if profile != nil {
+		log.Printf("failed to create user, username already taken %s", p)
+		return errors.New("username already taken")
+	}
+
+	profile, err = GetByUsername(p.Email)
+	if err != nil {
+		log.Printf("failed to retrieve profile by email %s %s", p, err)
+		return err
+	}
+
+	if profile != nil {
+		log.Printf("failed to create user, username already taken %s", p)
+		return errors.New("email already taken")
+	}
+
+	_, err = collection.InsertOne(ctx, p)
 	if err != nil {
 		log.Printf("failed to insert profile %s %s", p, err)
 		return err
@@ -117,13 +140,13 @@ func GetByEmail(email string) (Profile, error) {
 	return result, nil
 }
 
-func GetByUsername(username string) (Profile, error) {
+func GetByUsername(username string) (*Profile, error) {
 	var result Profile
 	filter := bson.D{{Key: "username", Value: username}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		log.Println(err)
-		return Profile{}, err
+		return &Profile{}, err
 	}
-	return result, nil
+	return &result, nil
 }

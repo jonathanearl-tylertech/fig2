@@ -65,7 +65,7 @@ func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb
 		return nil, errors.New("could not retrieve profile")
 	}
 
-	r := ConvertProfileToResponse(p)
+	r := ConvertProfileToResponse(*p)
 	return r, err
 }
 
