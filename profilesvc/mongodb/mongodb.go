@@ -43,6 +43,19 @@ func Connect(usr string, pwd string, addr string, db string, col string) {
 	}
 	log.Println("Successfully connected and pinged.")
 	collection = client.Database(db).Collection(col)
+
+	// todo: create seed
+	_, err = GetByEmail("earl.jonthan@gmail.com")
+	if err != nil {
+		CreateProfile(Profile{
+			ID:        primitive.NewObjectID(),
+			Email:     "earl.jonathan@gmail.com",
+			Name:      "jonathan earl",
+			Username:  "whattheearl",
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		})
+	}
 }
 
 func Disconnect() {
@@ -65,6 +78,17 @@ func CreateProfile(p Profile) error {
 func GetByEmail(email string) (Profile, error) {
 	var result Profile
 	filter := bson.D{{Key: "email", Value: email}}
+	err := collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		log.Println(err)
+		return Profile{}, err
+	}
+	return result, nil
+}
+
+func GetByUsername(username string) (Profile, error) {
+	var result Profile
+	filter := bson.D{{Key: "username", Value: username}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		log.Println(err)

@@ -2,3 +2,4 @@
 **/dist
 **/seed/output_data
 **/.env
+profilesvc/__debug_bin
