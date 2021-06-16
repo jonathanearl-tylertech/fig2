@@ -1,0 +1,24 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Profile {
+  name: String!
+  username: String!
+  summary: String!
+  email: String!
+}
+
+input NewProfile {
+  name: String!
+  username: String!
+  email: String!
+}
+
+type Query {
+  profile(username: String!): Profile!
+}
+
+type Mutation {
+  createProfile(input: NewProfile!): Profile!
+}

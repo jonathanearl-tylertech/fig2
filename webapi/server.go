@@ -1,55 +1,26 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net/http"
-	"time"
+	"os"
 
-	"github.com/google/uuid"
-	pb "github.com/whattheearl/fig/profilesvc/pb"
-	"google.golang.org/grpc"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/whattheearl/fig/webapi/graph"
+	"github.com/whattheearl/fig/webapi/graph/generated"
 )
-
-const (
-	profileurl = "profilesvc:50051"
-)
-
-func hello(w http.ResponseWriter, req *http.Request) {
-	log.Println("hello")
-	log.Println("email: ", GetProfile())
-	fmt.Fprintln(w, GetProfile())
-	// fmt.Fprintln(w, "hi")
-}
 
 func main() {
-	// GetProfile()
-
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(":8080", nil)
-}
-
-func GetProfile() string {
-	conn, err := grpc.Dial(profileurl, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-
-	client := pb.NewProfileServiceClient(conn)
-
-	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	id := uuid.New().String()
-
-	r, err := client.GetById(ctx, &pb.ProfileIdRequest{Id: id})
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
 
-	log.Printf("Greeting: %s", r.Name)
-	return r.String()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
