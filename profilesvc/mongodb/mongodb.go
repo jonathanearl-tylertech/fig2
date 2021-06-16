@@ -47,7 +47,7 @@ func Connect(usr string, pwd string, addr string, db string, col string) {
 	// todo: create seed
 	_, err = GetByEmail("earl.jonthan@gmail.com")
 	if err != nil {
-		CreateProfile(Profile{
+		Create(Profile{
 			ID:        primitive.NewObjectID(),
 			Email:     "earl.jonathan@gmail.com",
 			Name:      "jonathan earl",
@@ -65,7 +65,7 @@ func Disconnect() {
 	}
 }
 
-func CreateProfile(p Profile) error {
+func Create(p Profile) error {
 	_, err := collection.InsertOne(ctx, p)
 	if err != nil {
 		log.Printf("failed to insert profile %s %s", p, err)
@@ -73,6 +73,37 @@ func CreateProfile(p Profile) error {
 	}
 
 	return nil
+}
+
+func Remove(id primitive.ObjectID) error {
+	filter := bson.D{{Key: "ID", Value: id}}
+	result := collection.FindOneAndDelete(ctx, filter)
+	if result.Err() != mongo.ErrNoDocuments {
+		log.Println(result.Err())
+		return result.Err()
+	}
+	return nil
+}
+
+func UpdateById(p Profile) error {
+	filter := bson.D{{Key: "ID", Value: p.ID}}
+	result := collection.FindOneAndUpdate(ctx, filter, p)
+	if result.Err() != mongo.ErrNoDocuments {
+		log.Println(result.Err())
+		return result.Err()
+	}
+	return nil
+}
+
+func GetById(id primitive.ObjectID) (Profile, error) {
+	var result Profile
+	filter := bson.D{{Key: "ID", Value: id}}
+	err := collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		log.Println(err)
+		return Profile{}, err
+	}
+	return result, nil
 }
 
 func GetByEmail(email string) (Profile, error) {
