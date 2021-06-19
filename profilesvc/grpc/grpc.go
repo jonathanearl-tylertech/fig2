@@ -10,8 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 
+	pb "github.com/whattheearl/fig/pkg/profilepb"
 	profiles "github.com/whattheearl/fig/profilesvc/mongodb"
-	pb "github.com/whattheearl/fig/profilesvc/pb"
 )
 
 type server struct {
