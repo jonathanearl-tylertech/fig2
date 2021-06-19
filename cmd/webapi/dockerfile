@@ -1,5 +1,3 @@
 FROM golang:1.16.4-buster
-WORKDIR /webapi
-RUN go mod init github.com/whattheearl/fig/webapi
-RUN go mod tidy
-CMD [ "go", "run", "/server.go" ]
+WORKDIR /app
+CMD [ "go", "run", "/app/cmd/webapi/main.go" ]

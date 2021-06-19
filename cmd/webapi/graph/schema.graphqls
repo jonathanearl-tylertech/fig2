@@ -6,7 +6,6 @@ type Profile {
   name: String!
   username: String!
   summary: String!
-  email: String!
 }
 
 input NewProfile {

@@ -19,7 +19,7 @@ func (r *mutationResolver) CreateProfile(ctx context.Context, input model.NewPro
 		log.Println("failed to create profile", p, err)
 		return nil, err
 	}
-	result := model.Profile{Name: p.Name, Username: p.Username, Summary: "", Email: p.Email}
+	result := model.Profile{Name: p.Name, Username: p.Username, Summary: p.Summary, Email: p.Email}
 	return &result, nil
 }
 

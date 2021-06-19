@@ -6,18 +6,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 
 	pb "github.com/whattheearl/fig/pkg/profilepb"
 )
-
-func init() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		panic(err)
-	}
-}
 
 func GetProfileByUsername(username string) (*pb.ProfileResponse, error) {
 	PROFILE_ADDR := os.Getenv("PROFILE_ADDR")
