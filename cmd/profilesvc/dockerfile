@@ -1,5 +1,3 @@
 FROM golang:1.16.4-buster
-WORKDIR /server
-RUN go mod init github.com/whattheearl/fig
-RUN go mod tidy
-CMD [ "go", "run", "/server/profilesvc/server.go" ]
+WORKDIR /app
+CMD [ "go", "run", "/app/cmd/profilesvc/main.go" ]

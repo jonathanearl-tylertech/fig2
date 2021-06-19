@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -10,7 +11,7 @@ import (
 )
 
 func init() {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		panic(err)
 	}
@@ -23,6 +24,13 @@ func main() {
 	profile_db := os.Getenv("PROFILE_DB")
 	profile_collection := os.Getenv("PROFILE_COLLECTION")
 	db.Connect(mongo_usr, mongo_pwd, mongo_addr, profile_db, profile_collection)
+	db.Drop()
+	db.SeedMe()
+	p, err := db.GetByEmail("earl.jonathan@gmail.com")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(p)
 	addr := os.Getenv("PROFILE_ADDR")
 	svr.Run(addr)
 }

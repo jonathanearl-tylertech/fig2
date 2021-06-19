@@ -34,6 +34,7 @@ func Run(addr string) {
 }
 
 func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResponse, error) {
+	log.Printf("GetById: %s", in)
 	p, err := profiles.GetByEmail(in.Id)
 
 	if err != nil {
@@ -41,11 +42,13 @@ func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResp
 		return nil, errors.New("could not retrieve profile")
 	}
 
-	result := ConvertProfileToResponse(p)
-	return result, nil
+	r := GetProfileResponseFromProfile(p)
+	log.Printf("GetById result: %s", r)
+	return r, nil
 }
 
 func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.ProfileResponse, error) {
+	log.Printf("GetByEmail: %s", in)
 	p, err := profiles.GetByEmail(in.Email)
 
 	if err != nil {
@@ -53,11 +56,13 @@ func (s *server) GetByEmail(ctx context.Context, in *pb.EmailRequest) (*pb.Profi
 		return nil, errors.New("could not retrieve profile")
 	}
 
-	result := ConvertProfileToResponse(p)
-	return result, nil
+	r := GetProfileResponseFromProfile(p)
+	log.Printf("GetByEmail result: %s", r)
+	return r, nil
 }
 
 func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb.ProfileResponse, error) {
+	log.Printf("GetByUsername: %s", in)
 	p, err := profiles.GetByUsername(in.Username)
 
 	if err != nil {
@@ -65,16 +70,18 @@ func (s *server) GetByUsername(ctx context.Context, in *pb.UsernameRequest) (*pb
 		return nil, errors.New("could not retrieve profile")
 	}
 
-	r := ConvertProfileToResponse(*p)
+	r := GetProfileResponseFromProfile(p)
+	log.Printf("GetByUsername result: %s", r)
 	return r, err
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileResponse, error) {
-	p := profiles.Profile{
+	p := &profiles.Profile{
 		ID:        primitive.NewObjectID(),
 		Email:     in.Email,
 		Name:      in.Name,
 		Username:  in.Username,
+		Summary:   "",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -86,7 +93,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileR
 		return nil, err
 	}
 
-	r := ConvertProfileToResponse(p)
+	r := GetProfileResponseFromProfile(p)
 
 	return r, nil
 }
@@ -131,17 +138,17 @@ func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.Prof
 		return nil, err
 	}
 
-	r := ConvertProfileToResponse(p)
-
+	r := GetProfileResponseFromProfile(p)
 	return r, err
 }
 
-func ConvertProfileToResponse(p profiles.Profile) *pb.ProfileResponse {
-	result := &pb.ProfileResponse{
+func GetProfileResponseFromProfile(p *profiles.Profile) *pb.ProfileResponse {
+	result := pb.ProfileResponse{
 		Id:       p.ID.String(),
 		Email:    p.Email,
 		Name:     p.Name,
 		Username: p.Username,
+		Summary:  p.Summary,
 	}
-	return result
+	return &result
 }

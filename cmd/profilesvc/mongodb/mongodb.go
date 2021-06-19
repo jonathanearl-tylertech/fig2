@@ -23,6 +23,7 @@ type Profile struct {
 	Email     string
 	Name      string
 	Username  string
+	Summary   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -44,19 +45,6 @@ func Connect(usr string, pwd string, addr string, db string, col string) {
 	}
 	log.Println("Successfully connected and pinged.")
 	collection = client.Database(db).Collection(col)
-
-	// todo: create seed
-	_, err = GetByEmail("earl.jonthan@gmail.com")
-	if err != nil {
-		Create(Profile{
-			ID:        primitive.NewObjectID(),
-			Email:     "earl.jonathan@gmail.com",
-			Name:      "jonathan earl",
-			Username:  "whattheearl",
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		})
-	}
 }
 
 func Disconnect() {
@@ -66,33 +54,48 @@ func Disconnect() {
 	}
 }
 
-func Create(p Profile) error {
-	profile, err := GetByUsername(p.Username)
+func Drop() {
+	log.Println("dropping database")
+	err := collection.Database().Drop(ctx)
 	if err != nil {
-		log.Printf("failed to retrieve profile by username %s %s", p, err)
-		return err
+		panic("cannot drop database")
+	}
+}
+
+func SeedMe() {
+	profile := &Profile{
+		ID:        primitive.NewObjectID(),
+		Email:     "earl.jonathan@gmail.com",
+		Name:      "jonathan earl",
+		Username:  "whattheearl",
+		Summary:   "I'm just a small town boy, living in a hello world.",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
-	if profile != nil {
-		log.Printf("failed to create user, username already taken %s", p)
+	err := Create(profile)
+
+	if err != nil {
+		log.Println("seed failed")
+		panic("Unable to seed user")
+	}
+}
+
+func Create(in *Profile) error {
+	p, err := GetByUsername(in.Username)
+	if err.Error() != "mongo: no documents in result" {
+		log.Printf("failed to retrieve profile by username %s %s", in, err)
+		return errors.New("failed to validate username")
+	}
+
+	if p.Username == in.Username {
 		return errors.New("username already taken")
 	}
 
-	profile, err = GetByUsername(p.Email)
+	_, err = collection.InsertOne(ctx, in)
 	if err != nil {
-		log.Printf("failed to retrieve profile by email %s %s", p, err)
-		return err
-	}
-
-	if profile != nil {
-		log.Printf("failed to create user, username already taken %s", p)
-		return errors.New("email already taken")
-	}
-
-	_, err = collection.InsertOne(ctx, p)
-	if err != nil {
-		log.Printf("failed to insert profile %s %s", p, err)
-		return err
+		log.Printf("failed to insert profile: %s %s", in, err)
+		return errors.New("failed to validate username")
 	}
 
 	return nil
@@ -102,42 +105,38 @@ func Remove(id primitive.ObjectID) error {
 	filter := bson.D{{Key: "ID", Value: id}}
 	result := collection.FindOneAndDelete(ctx, filter)
 	if result.Err() != mongo.ErrNoDocuments {
-		log.Println(result.Err())
 		return result.Err()
 	}
 	return nil
 }
 
-func UpdateById(p Profile) error {
+func UpdateById(p *Profile) error {
 	filter := bson.D{{Key: "ID", Value: p.ID}}
 	result := collection.FindOneAndUpdate(ctx, filter, p)
 	if result.Err() != mongo.ErrNoDocuments {
-		log.Println(result.Err())
 		return result.Err()
 	}
 	return nil
 }
 
-func GetById(id primitive.ObjectID) (Profile, error) {
+func GetById(id primitive.ObjectID) (*Profile, error) {
 	var result Profile
 	filter := bson.D{{Key: "ID", Value: id}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		log.Println(err)
-		return Profile{}, err
+		return nil, err
 	}
-	return result, nil
+	return &result, nil
 }
 
-func GetByEmail(email string) (Profile, error) {
+func GetByEmail(email string) (*Profile, error) {
 	var result Profile
 	filter := bson.D{{Key: "email", Value: email}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		log.Println(err)
-		return Profile{}, err
+		return nil, err
 	}
-	return result, nil
+	return &result, nil
 }
 
 func GetByUsername(username string) (*Profile, error) {
@@ -145,8 +144,7 @@ func GetByUsername(username string) (*Profile, error) {
 	filter := bson.D{{Key: "username", Value: username}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		log.Println(err)
-		return &Profile{}, err
+		return nil, err
 	}
 	return &result, nil
 }
