@@ -19,7 +19,7 @@ func (r *mutationResolver) CreateProfile(ctx context.Context, input model.NewPro
 		log.Println("failed to create profile", p, err)
 		return nil, err
 	}
-	result := model.Profile{Name: p.Name, Username: p.Username, Summary: p.Summary, Email: p.Email}
+	result := model.Profile{Name: p.Name, Username: p.Username, Summary: p.Summary}
 	return &result, nil
 }
 
@@ -29,7 +29,7 @@ func (r *queryResolver) Profile(ctx context.Context, username string) (*model.Pr
 		log.Println("failed to retrieve profile by username", p, err)
 		return nil, errors.New("could not retrieve profile")
 	}
-	result := model.Profile{Name: p.Name, Username: p.Username, Summary: "", Email: p.Email}
+	result := model.Profile{Name: p.Name, Username: p.Username, Summary: p.Summary}
 	return &result, nil
 }
 

@@ -12,5 +12,4 @@ type Profile struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Summary  string `json:"summary"`
-	Email    string `json:"email"`
 }
