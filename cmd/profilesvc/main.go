@@ -13,6 +13,7 @@ import (
 func init() {
 	err := godotenv.Load(".env")
 	if err != nil {
+		fmt.Println("could not load .env")
 		panic(err)
 	}
 }
@@ -26,10 +27,7 @@ func main() {
 	db.Connect(mongo_usr, mongo_pwd, mongo_addr, profile_db, profile_collection)
 	db.Drop()
 	db.SeedMe()
-	p, err := db.GetByEmail("earl.jonathan@gmail.com")
-	if err != nil {
-		panic(err)
-	}
+	p, _ := db.GetByEmail("earl.jonathan@gmail.com")
 	fmt.Println(p)
 	addr := os.Getenv("PROFILE_ADDR")
 	svr.Run(addr)

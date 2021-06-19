@@ -36,33 +36,28 @@ func Connect(usr string, pwd string, addr string, db string, col string) {
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	client = mongoClient
 	if err != nil {
-		log.Println(err)
-		panic(err)
+		fmt.Println(err)
+		panic("could not connect to db")
 	}
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		log.Println(err)
-		panic(err)
+		panic("could not ping db")
 	}
 	log.Println("Successfully connected and pinged.")
 	collection = client.Database(db).Collection(col)
 }
 
-func Disconnect() {
-	err := client.Disconnect(ctx)
-	if err != nil {
-		log.Println(err)
-	}
+func Disconnect() error {
+	log.Println("disconnecting from database")
+	return client.Disconnect(ctx)
 }
 
-func Drop() {
+func Drop() error {
 	log.Println("dropping database")
-	err := collection.Database().Drop(ctx)
-	if err != nil {
-		panic("cannot drop database")
-	}
+	return collection.Database().Drop(ctx)
 }
 
-func SeedMe() {
+func SeedMe() error {
 	profile := &Profile{
 		ID:        primitive.NewObjectID(),
 		Email:     "earl.jonathan@gmail.com",
@@ -73,12 +68,7 @@ func SeedMe() {
 		UpdatedAt: time.Now(),
 	}
 
-	err := Create(profile)
-
-	if err != nil {
-		log.Println("seed failed")
-		panic("Unable to seed user")
-	}
+	return Create(profile)
 }
 
 func Create(in *Profile) error {
@@ -88,7 +78,7 @@ func Create(in *Profile) error {
 		return errors.New("failed to validate username")
 	}
 
-	if p.Username == in.Username {
+	if p != nil {
 		return errors.New("username already taken")
 	}
 
