@@ -14,7 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
-	"github.com/whattheearl/fig/webapi/graph/model"
+	"github.com/whattheearl/fig/cmd/webapi/graph/model"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -234,7 +234,7 @@ func (ec *executionContext) field_Mutation_createProfile_args(ctx context.Contex
 	var arg0 model.NewProfile
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewProfile2githubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐNewProfile(ctx, tmp)
+		arg0, err = ec.unmarshalNNewProfile2githubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐNewProfile(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -350,7 +350,7 @@ func (ec *executionContext) _Mutation_createProfile(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Profile)
 	fc.Result = res
-	return ec.marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐProfile(ctx, field.Selections, res)
+	return ec.marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐProfile(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Profile_name(ctx context.Context, field graphql.CollectedField, obj *model.Profile) (ret graphql.Marshaler) {
@@ -532,7 +532,7 @@ func (ec *executionContext) _Query_profile(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Profile)
 	fc.Result = res
-	return ec.marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐProfile(ctx, field.Selections, res)
+	return ec.marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐProfile(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2114,16 +2114,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewProfile2githubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐNewProfile(ctx context.Context, v interface{}) (model.NewProfile, error) {
+func (ec *executionContext) unmarshalNNewProfile2githubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐNewProfile(ctx context.Context, v interface{}) (model.NewProfile, error) {
 	res, err := ec.unmarshalInputNewProfile(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNProfile2githubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐProfile(ctx context.Context, sel ast.SelectionSet, v model.Profile) graphql.Marshaler {
+func (ec *executionContext) marshalNProfile2githubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐProfile(ctx context.Context, sel ast.SelectionSet, v model.Profile) graphql.Marshaler {
 	return ec._Profile(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋwebapiᚋgraphᚋmodelᚐProfile(ctx context.Context, sel ast.SelectionSet, v *model.Profile) graphql.Marshaler {
+func (ec *executionContext) marshalNProfile2ᚖgithubᚗcomᚋwhattheearlᚋfigᚋcmdᚋwebapiᚋgraphᚋmodelᚐProfile(ctx context.Context, sel ast.SelectionSet, v *model.Profile) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

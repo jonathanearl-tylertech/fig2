@@ -8,13 +8,13 @@ import (
 	"errors"
 	"log"
 
-	"github.com/whattheearl/fig/webapi/graph/generated"
-	"github.com/whattheearl/fig/webapi/graph/model"
-	"github.com/whattheearl/fig/webapi/profile"
+	"github.com/whattheearl/fig/cmd/webapi/graph/generated"
+	"github.com/whattheearl/fig/cmd/webapi/graph/model"
+	"github.com/whattheearl/fig/cmd/webapi/profilesvc"
 )
 
 func (r *mutationResolver) CreateProfile(ctx context.Context, input model.NewProfile) (*model.Profile, error) {
-	p, err := profile.CreateProfile(input.Username, input.Email, input.Name)
+	p, err := profilesvc.CreateProfile(input.Username, input.Email, input.Name)
 	if err != nil {
 		log.Println("failed to create profile", p, err)
 		return nil, err
@@ -24,7 +24,7 @@ func (r *mutationResolver) CreateProfile(ctx context.Context, input model.NewPro
 }
 
 func (r *queryResolver) Profile(ctx context.Context, username string) (*model.Profile, error) {
-	p, err := profile.GetProfileByUsername(username)
+	p, err := profilesvc.GetProfileByUsername(username)
 	if err != nil {
 		log.Println("failed to retrieve profile by username", p, err)
 		return nil, errors.New("could not retrieve profile")
