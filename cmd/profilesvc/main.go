@@ -4,19 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
-
 	svr "github.com/whattheearl/fig/cmd/profilesvc/grpc"
 	db "github.com/whattheearl/fig/cmd/profilesvc/mongodb"
 )
-
-func init() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		fmt.Println("could not load .env")
-		panic(err)
-	}
-}
 
 func main() {
 	mongo_usr := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
@@ -29,6 +19,6 @@ func main() {
 	db.SeedMe()
 	p, _ := db.GetByEmail("earl.jonathan@gmail.com")
 	fmt.Println(p)
-	addr := os.Getenv("PROFILE_ADDR")
+	addr := os.Getenv("PROFILE_PORT")
 	svr.Run(addr)
 }

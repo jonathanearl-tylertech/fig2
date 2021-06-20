@@ -1,3 +1,0 @@
-FROM golang:1.16.4-buster
-WORKDIR /app
-CMD [ "go", "run", "/app/cmd/webapi/main.go" ]

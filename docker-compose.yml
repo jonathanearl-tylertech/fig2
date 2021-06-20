@@ -2,27 +2,34 @@ version: "3"
 
 services:
   mongo:
+    restart: unless-stopped
     image: mongo:4.4
     ports:
       - 27017:27017
     env_file:
       - .env
 
-  # webapi:
-  #     build:
-  #         context: ./webapi
-  #     volumes: 
-  #         - .:/server
-  #     ports:
-  #         - 8080:8080
+  webapi:
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    command: [ "go", "run", "/fig/cmd/webapi/main.go" ]
+
   
-  # profilesvc:
-  #     build:
-  #         context: ./profilesvc
-  #     volumes: 
-  #         - .:/server
-  #     ports:
-  #         - 50051:50051
+  profilesvc:
+    build:
+      context: .
+    ports:
+      - 50051:50051
+    env_file:
+      - .env
+    depends_on: 
+      - mongo
+    command: [ "go", "run", "/fig/cmd/profilesvc/main.go" ]
+
 
   # api-gateway:
   #     image: nginx:latest

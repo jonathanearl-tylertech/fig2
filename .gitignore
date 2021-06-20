@@ -1,6 +1,5 @@
 **/node_modules
 **/dist
 **/seed/output_data
-**/.env
 profilesvc/__debug_bin
 webapi/__debug_bin
