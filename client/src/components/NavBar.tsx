@@ -1,41 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components'
 
 function NavBar() {
-    return (
-        <Nav>
-            <Ul>
-                <Li>
-                    <Link to="/">FriendFeed</Link>
-                </Li>
-                <Li>
-                    <Link to="/explore">Explore</Link>
-                </Li>
-                <Li>
-                    <Link to="/about">About</Link>
-                </Li>
-                <Li>
-                    <Link to="/users">Users</Link>
-                </Li>
-            </Ul>
-        </Nav>
-    )
+  return (
+    <nav className="w-screen h-12 bg-white mb-12">
+      <ul className="max-w-4xl flex flex-row justify-end mx-auto">
+        <li className="flex h-12 p-3">
+          <Link to="/profile">Profile</Link>
+        </li>
+      </ul>
+    </nav>
+  )
 }
 export default NavBar;
-
-const Nav = styled.nav`
-  display: flex;
-`
-const Ul = styled.ul`
-  display: flex;
-  list-style: none;
-`
-const Li = styled.li`
-  width: calc(100vw/5);
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-`
