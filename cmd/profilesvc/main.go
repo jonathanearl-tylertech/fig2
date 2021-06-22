@@ -19,6 +19,6 @@ func main() {
 	db.SeedMe()
 	p, _ := db.GetByEmail("earl.jonathan@gmail.com")
 	fmt.Println(p)
-	addr := os.Getenv("PROFILE_PORT")
-	svr.Run(addr)
+	port := os.Getenv("PROFILE_PORT")
+	svr.Run(port)
 }

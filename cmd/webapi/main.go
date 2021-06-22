@@ -29,6 +29,6 @@ func main() {
 	if port == "" {
 		panic("WEBAPI_PORT is not configured")
 	}
-	log.Printf("connect :%s for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, handler))
+	log.Printf("connect %s for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(port, handler))
 }
