@@ -14,21 +14,30 @@ import (
 )
 
 func main() {
+	mux := http.NewServeMux()
 
+	// setup gql server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	mux.Handle("/query", srv)
+	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
-	clientaddr := os.Getenv("CLIENT_ADDR")
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{clientaddr},
-		Debug:          true,
-	})
-	handler := c.Handler(srv)
+	// run server
 	port := os.Getenv("WEBAPI_PORT")
 	if port == "" {
-		panic("WEBAPI_PORT is not configured")
+		port = ":8080"
 	}
+
+	handler := corsconfig().Handler(mux)
+
 	log.Printf("connect %s for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(port, handler))
+}
+
+func corsconfig() *cors.Cors {
+	clientaddr := os.Getenv("CLIENT_ADDR")
+	configuration := os.Getenv("CONFIGURATION")
+	return cors.New(cors.Options{
+		AllowedOrigins: []string{clientaddr},
+		Debug:          configuration == "DEVELOPE",
+	})
 }
