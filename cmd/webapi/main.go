@@ -21,21 +21,21 @@ func main() {
 	mux.Handle("/query", srv)
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
+	// configure cors
+	clientaddr := os.Getenv("CLIENT_ADDR")
+	configuration := os.Getenv("CONFIGURATION")
+	handler := corsconfig(clientaddr, configuration).Handler(mux)
+
 	// run server
 	port := os.Getenv("WEBAPI_PORT")
 	if port == "" {
 		port = ":8080"
 	}
-
-	handler := corsconfig().Handler(mux)
-
 	log.Printf("connect %s for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(port, handler))
 }
 
-func corsconfig() *cors.Cors {
-	clientaddr := os.Getenv("CLIENT_ADDR")
-	configuration := os.Getenv("CONFIGURATION")
+func corsconfig(clientaddr string, configuration string) *cors.Cors {
 	return cors.New(cors.Options{
 		AllowedOrigins: []string{clientaddr},
 		Debug:          configuration == "DEVELOPE",
