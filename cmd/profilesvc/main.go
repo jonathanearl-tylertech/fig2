@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	svr "github.com/whattheearl/fig/cmd/profilesvc/grpc"
@@ -17,8 +16,6 @@ func main() {
 	db.Connect(mongo_usr, mongo_pwd, mongo_addr, profile_db, profile_collection)
 	db.Drop()
 	db.SeedMe()
-	p, _ := db.GetByEmail("earl.jonathan@gmail.com")
-	fmt.Println(p)
 	port := os.Getenv("PROFILE_PORT")
 	svr.Run(port)
 }
