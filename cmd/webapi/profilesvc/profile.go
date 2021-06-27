@@ -2,8 +2,8 @@ package profilesvc
 
 import (
 	"context"
+	"errors"
 	"log"
-	"os"
 	"time"
 
 	"google.golang.org/grpc"
@@ -11,48 +11,66 @@ import (
 	pb "github.com/whattheearl/fig/pkg/profilepb"
 )
 
-func GetProfileByUsername(username string) (*pb.ProfileResponse, error) {
-	PROFILE_ADDR := os.Getenv("PROFILE_ADDR")
-	conn, err := grpc.Dial(PROFILE_ADDR, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Println("failed to connect to profilesvc", PROFILE_ADDR, err)
+var (
+	profileclient pb.ProfileServiceClient
+	addr          string
+)
+
+func Config(address string) {
+	addr = address
+}
+
+func Connect() (pb.ProfileServiceClient, error) {
+	if profileclient != nil {
+		return profileclient, nil
 	}
-	defer conn.Close()
-
-	client := pb.NewProfileServiceClient(conn)
-
-	// Contact the server and print out its response.
+	log.Printf("connecting to profile service")
+	log.Printf("- addr: %s", addr)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-
-	r, err := client.GetByUsername(ctx, &pb.UsernameRequest{Username: username})
+	conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Println("could not retrieve user", err)
 		return nil, err
 	}
+	profileclient = pb.NewProfileServiceClient(conn)
+	return profileclient, err
+}
 
+func GetProfileByUsername(un string) (*pb.ProfileResponse, error) {
+	log.Printf("profilesvc[GetProfileByUsername] un: %s", un)
+	client, err := Connect()
+	if err != nil {
+		log.Println("profilesvc[GetProfileByUsername] could not connect to profile service. err:", err)
+		return nil, errors.New("profilesvc[GetProfileByUsername] could not connect to profile service")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := client.GetByUsername(ctx, &pb.UsernameRequest{Username: un})
+	return r, err
+}
+
+func GetById(id string) (*pb.ProfileResponse, error) {
+	log.Printf("profilesvc[GetById] id: %s", id)
+	client, err := Connect()
+	if err != nil {
+		log.Println("profilesvc[GetById] could not connect to profile service. err:", err)
+		return nil, errors.New("profilesvc[GetById] could not connect to profile service")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := client.GetById(ctx, &pb.IdRequest{Id: id})
 	return r, err
 }
 
 func CreateProfile(username string, email string, name string) (*pb.ProfileResponse, error) {
-	PROFILE_ADDR := os.Getenv("PROFILE_ADDR")
-	conn, err := grpc.Dial(PROFILE_ADDR, grpc.WithInsecure(), grpc.WithBlock())
+	log.Printf("profilesvc[CreateProfile] username: %s, email: %s, name: %s", username, email, name)
+	client, err := Connect()
 	if err != nil {
-		log.Println("failed to connect to profilesvc", PROFILE_ADDR, err)
+		log.Println("profilesvc[CreateProfile] could not connect to profile service. err:", err)
+		return nil, errors.New("profilesvc[CreateProfile] could not connect to profile service")
 	}
-	defer conn.Close()
-
-	client := pb.NewProfileServiceClient(conn)
-
-	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-
 	r, err := client.Create(ctx, &pb.CreateRequest{Username: username, Email: email, Name: name})
-	if err != nil {
-		log.Println("could not retrieve user", err)
-		return nil, err
-	}
-
 	return r, err
 }

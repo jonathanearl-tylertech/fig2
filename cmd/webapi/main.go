@@ -11,12 +11,16 @@ import (
 
 	"github.com/whattheearl/fig/cmd/webapi/graph"
 	"github.com/whattheearl/fig/cmd/webapi/graph/generated"
+	"github.com/whattheearl/fig/cmd/webapi/profilesvc"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	// configure to profile service
+	PROFILE_ADDR := os.Getenv("PROFILE_ADDR")
+	profilesvc.Config(PROFILE_ADDR)
 
 	// setup gql server
+	mux := http.NewServeMux()
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 	mux.Handle("/query", srv)
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
@@ -31,13 +35,17 @@ func main() {
 	if port == "" {
 		port = ":8080"
 	}
-	log.Printf("connect %s for GraphQL playground", port)
+	log.Printf("starting webapi server -connect to graphql playground on http://localhost%s", port)
 	log.Fatal(http.ListenAndServe(port, handler))
 }
 
 func corsconfig(clientaddr string, configuration string) *cors.Cors {
+	debugConfig := configuration == "DEVELOPE"
+	log.Printf("configure cors")
+	log.Printf("- allowed origins: %s", clientaddr)
+	log.Printf("- debug: %t", debugConfig)
 	return cors.New(cors.Options{
 		AllowedOrigins: []string{clientaddr},
-		Debug:          configuration == "DEVELOPE",
+		Debug:          debugConfig,
 	})
 }

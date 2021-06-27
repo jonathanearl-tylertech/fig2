@@ -8,8 +8,22 @@ type NewProfile struct {
 	Email    string `json:"email"`
 }
 
+type Post struct {
+	ID      string   `json:"id"`
+	Author  *Profile `json:"author"`
+	Message string   `json:"message"`
+	Image   string   `json:"image"`
+}
+
+type Posts struct {
+	Result []*Post `json:"result"`
+	Count  int     `json:"count"`
+	Cursor string  `json:"cursor"`
+}
+
 type Profile struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Summary  string `json:"summary"`
+	Name     string  `json:"name"`
+	Username string  `json:"username"`
+	Summary  string  `json:"summary"`
+	Posts    []*Post `json:"posts"`
 }
