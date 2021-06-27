@@ -44,7 +44,7 @@ func MockMultiplePostResponse() *pb.PostResponse {
 	return &pb.PostResponse{
 		Result: r,
 		Cursor: "59c7eff2-2c92-44e7-9d28-e19992d8a891",
-		Count:  1,
+		Count:  30,
 	}
 }
 
@@ -53,6 +53,6 @@ func MockResult() *pb.Result {
 		Id:       "701d05c9-8795-4e64-b745-88159fc52d58",
 		Message:  "This is the song that never ends...",
 		Image:    "https://i.ytimg.com/vi/MPV2METPeJU/maxresdefault.jpg",
-		Authorid: "e99ed385-10de-4536-9e24-06d800454a1f",
+		Authorid: "60d7a27a8fd61fb419618812",
 	}
 }

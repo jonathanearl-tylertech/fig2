@@ -30,36 +30,36 @@ type Profile struct {
 
 func Connect(usr string, pwd string, addr string, db string, col string) {
 	uri := fmt.Sprintf("mongodb://%s:%s@%s", usr, pwd, addr)
-	log.Printf("Connecting to db at: %s", uri)
+	log.Printf("mongodb[Connect] uri: %s", uri)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	client = mongoClient
 	if err != nil {
-		fmt.Println(err)
-		panic("could not connect to db")
+		log.Panic("mongodb[Connect] failed to connect to db")
 	}
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		log.Println(err)
-		panic("could not ping db")
+		log.Panic("mongodb[Connect] failed to ping db", err)
 	}
-	log.Println("Successfully connected and pinged.")
+	log.Println("mongodb[Connect] Successfully connected and pinged.")
 	collection = client.Database(db).Collection(col)
 }
 
 func Disconnect() error {
-	log.Println("disconnecting from database")
+	log.Println("mongodb[Disconnect]")
 	return client.Disconnect(ctx)
 }
 
 func Drop() error {
-	log.Println("dropping database")
+	log.Println("mongodb[Drop]")
 	return collection.Database().Drop(ctx)
 }
 
 func SeedMe() error {
+	log.Println("mongodb[SeedMe]")
+	id, _ := primitive.ObjectIDFromHex("60d7a27a8fd61fb419618812")
 	profile := &Profile{
-		ID:        primitive.NewObjectID(),
+		ID:        id,
 		Email:     "earl.jonathan@gmail.com",
 		Name:      "jonathan earl",
 		Username:  "whattheearl",
@@ -67,14 +67,14 @@ func SeedMe() error {
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-
+	log.Println("mongodb[SeedMe] seeding:", profile)
 	return Create(profile)
 }
 
 func Create(in *Profile) error {
 	p, err := GetByUsername(in.Username)
 	if err.Error() != "mongo: no documents in result" {
-		log.Printf("failed to retrieve profile by username %s %s", in, err)
+		log.Printf("mongodb[Create] failed to validate username. username: %s, err: %s", in.Username, err)
 		return errors.New("failed to validate username")
 	}
 
@@ -84,24 +84,33 @@ func Create(in *Profile) error {
 
 	_, err = collection.InsertOne(ctx, in)
 	if err != nil {
-		log.Printf("failed to insert profile: %s %s", in, err)
+		log.Printf("mongodb[Create] failed to insert profile: %s %s", in.Username, err)
 		return errors.New("failed to validate username")
 	}
 
 	return nil
 }
 
-func Remove(id primitive.ObjectID) error {
-	filter := bson.D{{Key: "ID", Value: id}}
+func Remove(id string) error {
+	log.Println("mongodb[Remove] id:", id)
+	objectid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println("mongodb[Remove]", err)
+		return errors.New("bad request, invalid id")
+	}
+
+	filter := bson.D{{Key: "ID", Value: objectid}}
 	result := collection.FindOneAndDelete(ctx, filter)
 	if result.Err() != mongo.ErrNoDocuments {
+		log.Println("mongodb[Remove] failed to remove profile:", id)
 		return result.Err()
 	}
 	return nil
 }
 
-func UpdateById(p *Profile) error {
-	filter := bson.D{{Key: "ID", Value: p.ID}}
+func Update(p *Profile) error {
+	log.Println("mongodb[UpdateById] p:", p)
+	filter := bson.D{{Key: "_id", Value: p.ID}}
 	result := collection.FindOneAndUpdate(ctx, filter, p)
 	if result.Err() != mongo.ErrNoDocuments {
 		return result.Err()
@@ -109,32 +118,47 @@ func UpdateById(p *Profile) error {
 	return nil
 }
 
-func GetById(id primitive.ObjectID) (*Profile, error) {
-	var result Profile
-	filter := bson.D{{Key: "ID", Value: id}}
-	err := collection.FindOne(ctx, filter).Decode(&result)
+func GetById(id string) (*Profile, error) {
+	log.Printf("[GetById] id: %s", id)
+	objectid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println("[GetById]", err)
+		return nil, errors.New("bad request, invalid id")
+	}
+
+	log.Println("mongodb[GetById] id:", id)
+	var r Profile
+	f := bson.D{{Key: "_id", Value: objectid}}
+	err = collection.FindOne(ctx, f).Decode(&r)
+
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+
+	log.Println("mongodb[GetById] result:", r)
+	return &r, nil
 }
 
 func GetByEmail(email string) (*Profile, error) {
-	var result Profile
-	filter := bson.D{{Key: "email", Value: email}}
-	err := collection.FindOne(ctx, filter).Decode(&result)
+	log.Println("mongodb[GetByEmail] id:", email)
+	var r Profile
+	f := bson.D{{Key: "email", Value: email}}
+	err := collection.FindOne(ctx, f).Decode(&r)
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+	log.Println("mongodb[GetByEmail] r:", r)
+	return &r, nil
 }
 
 func GetByUsername(username string) (*Profile, error) {
-	var result Profile
+	log.Println("mongodb[GetByUsername] username:", username)
+	var r Profile
 	filter := bson.D{{Key: "username", Value: username}}
-	err := collection.FindOne(ctx, filter).Decode(&result)
+	err := collection.FindOne(ctx, filter).Decode(&r)
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+	log.Println("mongodb[GetByUsername] r:", r)
+	return &r, nil
 }

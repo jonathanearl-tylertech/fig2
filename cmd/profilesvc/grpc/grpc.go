@@ -35,8 +35,13 @@ func Run(addr string) {
 }
 
 func (s *server) GetById(ctx context.Context, in *pb.IdRequest) (*pb.ProfileResponse, error) {
-	log.Printf("GetById: %s", in)
-	p, err := profiles.GetByEmail(in.Id)
+	if in == nil {
+		return nil, errors.New("bad request, id required")
+	}
+
+	log.Printf("[GetById] id: %s", in.Id)
+
+	p, err := profiles.GetById(in.Id)
 
 	if err != nil {
 		log.Println(err)
@@ -100,27 +105,12 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.ProfileR
 }
 
 func (s *server) RemoveById(ctx context.Context, in *pb.IdRequest) (*pb.Empty, error) {
-	id, err := primitive.ObjectIDFromHex(in.Id)
-
-	if err != nil {
-		log.Printf("failed to convert profile id: %s stack: %s", in, err)
-		return nil, err
-	}
-
-	err = profiles.Remove(id)
-
+	err := profiles.Remove(in.Id)
 	return nil, err
 }
 
 func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.ProfileResponse, error) {
-	id, err := primitive.ObjectIDFromHex(in.Id)
-
-	if err != nil {
-		log.Printf("failed to convert profile id: %s err: %s", in, err)
-		return nil, err
-	}
-
-	p, err := profiles.GetById(id)
+	p, err := profiles.GetById(in.Id)
 
 	if err != nil {
 		log.Printf("failed to retrieve profile: %s err: %s", in, err)
@@ -132,7 +122,7 @@ func (s *server) UpdateById(ctx context.Context, in *pb.UpdateRequest) (*pb.Prof
 	p.Username = in.Username
 	p.UpdatedAt = time.Now()
 
-	err = profiles.UpdateById(p)
+	err = profiles.Update(p)
 
 	if err != nil {
 		log.Println("failed to update profile: $s", err)
