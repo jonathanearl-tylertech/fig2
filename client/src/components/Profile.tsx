@@ -8,8 +8,16 @@ const PROFILE = gql`
   }
 `;
 
+interface Data {
+  profile: {
+    summary: string;
+    username: string;
+    name: string;
+  }
+}
+
 export default function Profile() {
-  const { loading, error, data } = useQuery(PROFILE);
+  const { loading, error, data } = useQuery<Data>(PROFILE);
 
   if(loading) {
     return (<div>loading...</div>)
@@ -28,7 +36,7 @@ export default function Profile() {
       </div>
       <div className="flex flex-col h-full">
         <div className="flex flex-row h-10 items-center mb-4">
-          <div className="mr-4 text-2xl">{data.profile.username}</div>
+          <div className="mr-4 text-2xl">{data?.profile.username}</div>
           <div className="mr-1">edit</div>
           <div>config</div>
         </div>
@@ -39,8 +47,8 @@ export default function Profile() {
           <div className="mr-12"><span className="font-semibold">53</span> following</div>
         </div>
 
-        <div className="font-semibold capitalize">{data.profile.name}</div>
-        <div>{data.profile.summary}</div>
+        <div className="font-semibold capitalize">{data?.profile.name}</div>
+        <div>{data?.profile.summary}</div>
       </div>
     </div>
   )
