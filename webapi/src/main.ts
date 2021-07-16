@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import ProfileRoute from './profile/profile.route';
+import { ImportMock } from './profile/profile.mock';
 
 // connect to db (shared for now)
 mongoose.connect(
@@ -14,7 +15,9 @@ mongoose.connect(
       password: "admin"
     }
   }
-)
+).then(async () => {
+  await ImportMock();
+})
 
 const app = express();
 
