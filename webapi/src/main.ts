@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import ProfileRoute from './profile/profile.route';
 
-// connect to db
+// connect to db (shared for now)
 mongoose.connect(
   'mongodb://localhost:27017/fig', 
   {
@@ -17,6 +17,8 @@ mongoose.connect(
 )
 
 const app = express();
+
+// parse body as json
 app.use(express.json());
 
 // set up routes
