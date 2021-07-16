@@ -4,11 +4,6 @@ export interface IProfile {
   name: String;
   username: String;
   summary: String;
-  createdAt: Date;
-  modifiedAt: Date;
-}
-
-export interface IUpdateProfile {
-  name: String;
-  summary: String;
+  createdAt?: Date;
+  modifiedAt?: Date;
 }

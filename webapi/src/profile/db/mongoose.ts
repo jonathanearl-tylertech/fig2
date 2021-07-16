@@ -1,8 +1,8 @@
 import Mongoose from 'mongoose';
-import { IProfile } from './profile.model';
-import { ImportMock } from './profile.mock';
 import Dotenv from 'dotenv';
-import { getRequiredEnv } from '../helpers/getRequiredEnv';
+import { getRequiredEnv } from '../../helpers/getRequiredEnv';
+import { IProfile } from '../models/profile';
+import { ProfileDb } from './db';
 
 Dotenv.config()
 
@@ -16,7 +16,7 @@ const profileSchema = new Mongoose.Schema({
   modifiedAt: Date,
 });
 
-export const ProfileDB = Mongoose.model<IProfile>('Profile', profileSchema);
+export const Profile = Mongoose.model<IProfile>('Profile', profileSchema);
 
 export const ConnectProfileDb = async () => {
   const PROFILE_MONGO_ADDRESS = getRequiredEnv('PROFILE_MONGO_ADDRESS');
@@ -26,7 +26,6 @@ export const ConnectProfileDb = async () => {
   const connectionString = `mongodb://${PROFILE_MONGO_ADDRESS}/${PROFILE_TABLE}`;
 
   console.log('[db] connecting to:', connectionString)
-  // connect to db (shared for now)
   await Mongoose.connect(
     connectionString,
     {
@@ -39,5 +38,6 @@ export const ConnectProfileDb = async () => {
       }
     }
   )
-  await ImportMock();
+
+  await ProfileDb.ImportMock();
 }

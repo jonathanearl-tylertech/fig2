@@ -1,14 +1,18 @@
 import express from 'express';
-import { IProfile, IUpdateProfile } from './profile.model';
-import { ProfileDB } from './profile.mongoose'
-import { ProfileValidation, UpdateProfileValidation } from './profile.joi';
+import { ProfileDb } from './db/db';
+import { ICreateProfile } from './models/create-profile';
+import { IUpdateProfile } from './models/update-profile';
+import { CreateProfileValidation } from './validation/create-profile';
+import { UpdateProfileValidation } from './validation/update-profile';
+import { ConnectProfileDb } from './db/mongoose';
 
+ConnectProfileDb()
 
 const ProfileRoute = express.Router();
 
 ProfileRoute.get('', async (req, res) => {
   console.log(`[profile] get all`);
-  const profiles: IProfile[] = await ProfileDB.find({}).exec();
+  const profiles = await ProfileDb.GetAll();
   console.log(`[profile] profiles: ${profiles}`);
   res.send(profiles);
 });
@@ -16,7 +20,7 @@ ProfileRoute.get('', async (req, res) => {
 ProfileRoute.get('/:username', async (req, res) => {
   const username = req.params.username;
   console.log(`[profile] get username: ${username}`);
-  const profile = await ProfileDB.findOne({ username }).exec();
+  const profile = ProfileDb.Get(username);
   if (!profile) {
     console.log(`[profile] profile not found`);
     return res.sendStatus(404);
@@ -35,34 +39,28 @@ ProfileRoute.put('/:username', async (req, res) => {
 
   const username = req.params.username;
   
-  const profile = await ProfileDB.findOneAndUpdate({ username }).exec();
-
+  const profile = ProfileDb.Update(username, updateProfile);
   if (!profile) {
     console.log('[profile] profile could not be found:', username);
     return res.status(400).send(`profile does not exist: ${username}`);
   }
 
-  console.log(`[profile] user found:`, profile);
-  profile.name = updateProfile.name;
-  profile.summary = updateProfile.summary;
-
-  console.log(`[profile] profile: ${profile}`);
+  console.log(`[profile] updated profile: ${profile}`);
   res.send(profile);
 })
 
 
 ProfileRoute.post('/', async (req, res) => {
-  const newProfile: IProfile = req.body;
+  const newProfile: ICreateProfile = req.body;
   console.log(`[profile] create profile: `, newProfile);
 
-  const { error } = ProfileValidation.validate(newProfile);
+  const { error } = CreateProfileValidation.validate(newProfile);
   if (error) {
     console.log(`[profile] bad request: `, error);
     return res.status(400).send(error.message);
   }
 
-  const profile = new ProfileDB(newProfile);
-  await profile.save();
+  const profile = ProfileDb.Create(newProfile);
   console.log("[profile] profile created:", profile);
   res.json(profile);
 });

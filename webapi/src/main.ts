@@ -1,8 +1,6 @@
 import Express from 'express';
-import { ConnectProfileDb } from './profile/profile.mongoose';
+import { ConnectProfileDb } from './profile/db/mongoose';
 import ProfileRoute from './profile/profile.route';
-
-ConnectProfileDb()
 
 const app = Express();
 
