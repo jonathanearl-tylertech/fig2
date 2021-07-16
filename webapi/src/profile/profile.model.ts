@@ -1,5 +1,5 @@
 export interface IProfile {
-  id: String;
+  _id: String;
   email: String;
   name: String;
   username: String;
