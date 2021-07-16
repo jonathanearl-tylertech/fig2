@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { IProfile } from './profile.model';
 
 // mongoose schema
 const profileSchema = new mongoose.Schema({
@@ -10,4 +11,4 @@ const profileSchema = new mongoose.Schema({
   modifiedAt: Date,
 });
 
-export default mongoose.model('Profile', profileSchema);
+export const ProfileDB = mongoose.model<IProfile>('Profile', profileSchema);
