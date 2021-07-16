@@ -3,6 +3,7 @@ import { IProfile, IUpdateProfile } from './profile.model';
 import { ProfileDB } from './profile.mongoose'
 import { ProfileValidation, UpdateProfileValidation } from './profile.joi';
 
+
 const ProfileRoute = express.Router();
 
 ProfileRoute.get('', async (req, res) => {

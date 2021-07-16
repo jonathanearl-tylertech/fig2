@@ -1,28 +1,13 @@
-import express from 'express';
-import mongoose from 'mongoose';
+import Express from 'express';
+import { ConnectProfileDb } from './profile/profile.mongoose';
 import ProfileRoute from './profile/profile.route';
-import { ImportMock } from './profile/profile.mock';
 
-// connect to db (shared for now)
-mongoose.connect(
-  'mongodb://localhost:27017/fig', 
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    authSource: "admin",
-    auth: {
-      user: "admin",
-      password: "admin"
-    }
-  }
-).then(async () => {
-  await ImportMock();
-})
+ConnectProfileDb()
 
-const app = express();
+const app = Express();
 
 // parse body as json
-app.use(express.json());
+app.use(Express.json());
 
 // set up routes
 app.use('/profile', ProfileRoute);
