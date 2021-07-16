@@ -25,7 +25,7 @@ ProfileRoute.get('/:username', async (req, res) => {
     console.log(`[profile] profile not found`);
     return res.sendStatus(404);
   }
-  console.log(`[profile] profile: ${profile}`);
+  console.log(`[profile] profile:`, profile);
   res.send(profile);
 });
 
