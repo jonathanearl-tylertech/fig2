@@ -17,7 +17,8 @@ ProfileRoute.get('/:username', async (req, res) => {
   console.log(`[profile] get username: ${username}`);
   const profile: IProfile = await Profile.findOne({ username }).exec();
   if (!profile) {
-    res.statusCode = 404;
+    console.log(`[profile] profile not found`);
+    return res.sendStatus(404);
   }
   console.log(`[profile] profile: ${profile}`);
   res.send(profile);
