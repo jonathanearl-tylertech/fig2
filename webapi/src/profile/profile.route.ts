@@ -1,13 +1,13 @@
 import express from 'express';
 import { IProfile, IUpdateProfile } from './profile.model';
-import Profile from './profile.mongoose'
+import { ProfileDB } from './profile.mongoose'
 import { ProfileValidation, UpdateProfileValidation } from './profile.joi';
 
 const ProfileRoute = express.Router();
 
 ProfileRoute.get('', async (req, res) => {
   console.log(`[profile] get all`);
-  const profiles: IProfile[] = await Profile.find({}).exec();
+  const profiles: IProfile[] = await ProfileDB.find({}).exec();
   console.log(`[profile] profiles: ${profiles}`);
   res.send(profiles);
 });
@@ -15,7 +15,7 @@ ProfileRoute.get('', async (req, res) => {
 ProfileRoute.get('/:username', async (req, res) => {
   const username = req.params.username;
   console.log(`[profile] get username: ${username}`);
-  const profile: IProfile = await Profile.findOne({ username }).exec();
+  const profile = await ProfileDB.findOne({ username }).exec();
   if (!profile) {
     console.log(`[profile] profile not found`);
     return res.sendStatus(404);
@@ -34,7 +34,13 @@ ProfileRoute.put('/:username', async (req, res) => {
 
   const username = req.params.username;
   
-  const profile: IProfile = await Profile.findOneAndUpdate({ username }).exec();
+  const profile = await ProfileDB.findOneAndUpdate({ username }).exec();
+
+  if (!profile) {
+    console.log('[profile] profile could not be found:', username);
+    return res.status(400).send(`profile does not exist: ${username}`);
+  }
+
   console.log(`[profile] user found:`, profile);
   profile.name = updateProfile.name;
   profile.summary = updateProfile.summary;
@@ -54,7 +60,7 @@ ProfileRoute.post('/', async (req, res) => {
     return res.status(400).send(error.message);
   }
 
-  const profile = new Profile(newProfile);
+  const profile = new ProfileDB(newProfile);
   await profile.save();
   console.log("[profile] profile created:", profile);
   res.json(profile);
