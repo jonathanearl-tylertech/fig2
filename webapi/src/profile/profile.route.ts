@@ -20,7 +20,7 @@ ProfileRoute.get('', async (req, res) => {
 ProfileRoute.get('/:username', async (req, res) => {
   const username = req.params.username;
   console.log(`[profile] get username: ${username}`);
-  const profile = ProfileDb.Get(username);
+  const profile = await ProfileDb.Get(username);
   if (!profile) {
     console.log(`[profile] profile not found`);
     return res.sendStatus(404);
@@ -39,7 +39,7 @@ ProfileRoute.put('/:username', async (req, res) => {
 
   const username = req.params.username;
   
-  const profile = ProfileDb.Update(username, updateProfile);
+  const profile = await ProfileDb.Update(username, updateProfile);
   if (!profile) {
     console.log('[profile] profile could not be found:', username);
     return res.status(400).send(`profile does not exist: ${username}`);
@@ -60,7 +60,7 @@ ProfileRoute.post('/', async (req, res) => {
     return res.status(400).send(error.message);
   }
 
-  const profile = ProfileDb.Create(newProfile);
+  const profile = await ProfileDb.Create(newProfile);
   console.log("[profile] profile created:", profile);
   res.json(profile);
 });
