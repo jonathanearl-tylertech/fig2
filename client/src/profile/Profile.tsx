@@ -1,25 +1,29 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client' 
+import React, { useState, useEffect } from 'react';
 
-const PROFILE = gql`
-  query GetUserProfile {
-    profile(username: "whattheearl")
-    {  summary, username, name }
-  }
-`;
-
-interface Data {
-  profile: {
-    summary: string;
-    username: string;
-    name: string;
-  }
+interface IProfile {
+  email: String;
+  name: String;
+  username: String;
+  summary: String;
+  createdAt?: Date;
+  modifiedAt?: Date;
 }
 
-export default function Profile() {
-  const { loading, error, data } = useQuery<Data>(PROFILE);
+export function Profile() {
+  const [ profile, setProfile ] = useState<IProfile | undefined>(undefined);
+  const [ error, setError ] = useState(undefined);
 
-  if(loading) {
+  useEffect(() => {
+    async function fetchProfile() {
+      const result = await (await fetch('http://localhost:5000/profile/whattheearl')).json();
+      setProfile(result)
+      console.log(result);
+    }
+
+    fetchProfile();
+  }, [])
+
+  if(!profile) {
     return (<div>loading...</div>)
   }
 
@@ -36,7 +40,7 @@ export default function Profile() {
       </div>
       <div className="flex flex-col h-full">
         <div className="flex flex-row h-10 items-center mb-4">
-          <div className="mr-4 text-2xl">{data?.profile.username}</div>
+          <div className="mr-4 text-2xl">{profile.username}</div>
           <div className="mr-1">edit</div>
           <div>config</div>
         </div>
@@ -47,8 +51,8 @@ export default function Profile() {
           <div className="mr-12"><span className="font-semibold">53</span> following</div>
         </div>
 
-        <div className="font-semibold capitalize">{data?.profile.name}</div>
-        <div>{data?.profile.summary}</div>
+        <div className="font-semibold capitalize">{profile.name}</div>
+        <div>{profile.summary}</div>
       </div>
     </div>
   )
