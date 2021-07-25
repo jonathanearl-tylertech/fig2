@@ -21,10 +21,10 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-
       <Router>
         <main className="h-screen w-screen">
           <NavBar></NavBar>
+          <Login></Login>
           <Switch>
             <Route path="/feed">
               <FriendFeed />
