@@ -1,14 +1,14 @@
-import Express from 'express';
-import { ConnectProfileDb } from './profile/db/mongoose';
-import ProfileRoute from './profile/profile.route';
+import express from 'express';
+import profileRoute from './profile/profile.route';
 
-const app = Express();
+const app = express();
 
 // parse body as json
-app.use(Express.json());
+app.use(express.json());
 
 // set up routes
-app.use('/profile', ProfileRoute);
+app.use('/profile', profileRoute);
 
+// start server
 const server = app.listen('5000');
 server.setTimeout(2000);
