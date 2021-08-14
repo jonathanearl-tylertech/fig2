@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 // profile validation schema
-export const CreateProfileValidation = Joi.object({
+export default Joi.object({
   username: Joi.string()
     .alphanum()
     .min(3)

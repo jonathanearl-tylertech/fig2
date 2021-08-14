@@ -1,26 +1,26 @@
 import express from 'express';
-import { ProfileDb } from './db/db';
-import { ICreateProfile } from './models/create-profile';
-import { IUpdateProfile } from './models/update-profile';
-import { CreateProfileValidation } from './validation/create-profile';
-import { UpdateProfileValidation } from './validation/update-profile';
-import { ConnectProfileDb } from './db/mongoose';
+import profileService from './services/profileService';
+import ICreateProfileRequest from './models/createProfileRequest';
+import IUpdateProfile from './models/updateProfileRequest';
+import CreateProfileValidation from './validation/createProfileValidation';
+import UpdateProfileValidation from './validation/updateProfileValidation';
+import { ConnectProfileDb } from './services/mongoose';
 
 ConnectProfileDb()
 
-const ProfileRoute = express.Router();
+const profileRoute = express.Router();
 
-ProfileRoute.get('', async (req, res) => {
+profileRoute.get('', async (req, res) => {
   console.log(`[profile] get all`);
-  const profiles = await ProfileDb.GetAll();
+  const profiles = await profileService.GetAll();
   console.log(`[profile] profiles: ${profiles}`);
   res.send(profiles);
 });
 
-ProfileRoute.get('/:username', async (req, res) => {
+profileRoute.get('/:username', async (req, res) => {
   const username = req.params.username;
   console.log(`[profile] get username: ${username}`);
-  const profile = await ProfileDb.Get(username);
+  const profile = await profileService.Get(username);
   if (!profile) {
     console.log(`[profile] profile not found`);
     return res.sendStatus(404);
@@ -29,7 +29,7 @@ ProfileRoute.get('/:username', async (req, res) => {
   res.send(profile);
 });
 
-ProfileRoute.put('/:username', async (req, res) => {
+profileRoute.put('/:username', async (req, res) => {
   const updateProfile: IUpdateProfile = req.body;
   const { error } = UpdateProfileValidation.validate(updateProfile);
   if (error) {
@@ -39,7 +39,7 @@ ProfileRoute.put('/:username', async (req, res) => {
 
   const username = req.params.username;
   
-  const profile = await ProfileDb.Update(username, updateProfile);
+  const profile = await profileService.Update(username, updateProfile);
   if (!profile) {
     console.log('[profile] profile could not be found:', username);
     return res.status(400).send(`profile does not exist: ${username}`);
@@ -50,8 +50,8 @@ ProfileRoute.put('/:username', async (req, res) => {
 })
 
 
-ProfileRoute.post('/', async (req, res) => {
-  const newProfile: ICreateProfile = req.body;
+profileRoute.post('/', async (req, res) => {
+  const newProfile: ICreateProfileRequest = req.body;
   console.log(`[profile] create profile: `, newProfile);
 
   const { error } = CreateProfileValidation.validate(newProfile);
@@ -60,10 +60,10 @@ ProfileRoute.post('/', async (req, res) => {
     return res.status(400).send(error.message);
   }
 
-  const profile = await ProfileDb.Create(newProfile);
+  const profile = await profileService.Create(newProfile);
   console.log("[profile] profile created:", profile);
   res.json(profile);
 });
 
 
-export default ProfileRoute;
+export default profileRoute;

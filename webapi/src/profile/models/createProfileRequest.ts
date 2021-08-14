@@ -1,4 +1,4 @@
-export interface ICreateProfile {
+export default interface ICreateProfileRequest {
   email: String;
   name: String;
   username: String;
