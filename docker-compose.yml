@@ -10,3 +10,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
 
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+

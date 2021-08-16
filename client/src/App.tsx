@@ -32,9 +32,6 @@ function App() {
             <Route path="/profile">
               <Profile />
             </Route>
-            <Route path="/">
-              <Redirect from="/" to="/profile" />
-            </Route>
           </Switch>
         </main>
       </Router>

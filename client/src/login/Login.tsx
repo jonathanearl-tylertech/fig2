@@ -1,9 +1,9 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { TextField, Button } from '@material-ui/core';
-import fig from '../assets/images/fig.png';
-import { HorizontalLine } from './HorizontalLine';
-import { OrSpacer } from './OrSpacer';
+import fig from '../../assets/images/fig.png';
+import HorizontalLine from './components/HorizontalLine';
+import OrSpacer from './components/OrSpacer';
 
 Modal.setAppElement('#root');
 

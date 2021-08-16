@@ -1,7 +1,7 @@
 import react from 'react';
-import { HorizontalLine } from './HorizontalLine';
+import HorizontalLine from './HorizontalLine';
 
-export const OrSpacer = () => {
+export default () => {
   return (
     <div className="flex flex-row" style={{ margin: '10px 0 18px 0' }}>
       <HorizontalLine></HorizontalLine>
