@@ -1,13 +1,13 @@
-import Mongoose from 'mongoose';
-import Dotenv from 'dotenv';
-import { getRequiredEnv } from '../../helpers/getRequiredEnv';
-import { IProfile } from '../models/profile';
-import { ProfileDb } from './db';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import getRequiredEnv from '../../helpers/getRequiredEnv';
+import Profile from '../models/profile';
+import profileService from './profileService';
 
-Dotenv.config()
+dotenv.config()
 
 // mongoose schema
-const profileSchema = new Mongoose.Schema({
+const profileSchema = new mongoose.Schema({
   email: String,
   name: String,
   username: String,
@@ -16,7 +16,7 @@ const profileSchema = new Mongoose.Schema({
   modifiedAt: Date,
 });
 
-export const Profile = Mongoose.model<IProfile>('Profile', profileSchema);
+export const Profile = mongoose.model<Profile>('Profile', profileSchema);
 
 export const ConnectProfileDb = async () => {
   const PROFILE_MONGO_ADDRESS = getRequiredEnv('PROFILE_MONGO_ADDRESS');
@@ -26,7 +26,7 @@ export const ConnectProfileDb = async () => {
   const connectionString = `mongodb://${PROFILE_MONGO_ADDRESS}/${PROFILE_TABLE}`;
 
   console.log('[db] connecting to:', connectionString)
-  await Mongoose.connect(
+  await mongoose.connect(
     connectionString,
     {
       useNewUrlParser: true,
@@ -39,5 +39,5 @@ export const ConnectProfileDb = async () => {
     }
   )
 
-  await ProfileDb.ImportMock();
+  await profileService.ImportMock();
 }

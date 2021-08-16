@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export const UpdateProfileValidation = Joi.object({
+export default Joi.object({
   name: Joi.string()
     .min(3)
     .max(50)

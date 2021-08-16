@@ -1,4 +1,4 @@
-export interface IProfile {
+export default interface IProfile {
   _id: String;
   email: String;
   name: String;

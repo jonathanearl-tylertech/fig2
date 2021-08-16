@@ -1,6 +1,6 @@
-import { ICreateProfile } from "../models/create-profile";
-import { IProfile } from "../models/profile";
-import { IUpdateProfile } from "../models/update-profile";
+import ICreateProfileRequest from "../models/createProfileRequest";
+import IProfile from "../models/profile";
+import IUpdateProfile from "../models/updateProfileRequest";
 import { Profile } from "./mongoose";
 
 
@@ -14,7 +14,7 @@ const Get = async (username: string): Promise<IProfile | undefined> => {
   return profile?.toObject();
 }
 
-const Create = async (newProfile: ICreateProfile): Promise<IProfile> => {
+const Create = async (newProfile: ICreateProfileRequest): Promise<IProfile> => {
   const profile = new Profile(newProfile);
   await profile.save();
   return profile.toObject();
@@ -51,7 +51,7 @@ const ImportMock = async () => {
   }
 }
 
-export const ProfileDb = {
+export default {
   GetAll,
   Get,
   Create,
