@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import getRequiredEnv from '../../helpers/getRequiredEnv';
-import Profile from '../models/profile';
-import profileService from './profileService';
+import IProfile from '../models/IProfile';
+import profileService from './profile.service';
 
 dotenv.config()
 
@@ -16,7 +16,7 @@ const profileSchema = new mongoose.Schema({
   modifiedAt: Date,
 });
 
-export const Profile = mongoose.model<Profile>('Profile', profileSchema);
+export const ProfileContext = mongoose.model<IProfile>('Profile', profileSchema);
 
 export const ConnectProfileDb = async () => {
   const PROFILE_MONGO_ADDRESS = getRequiredEnv('PROFILE_MONGO_ADDRESS');
