@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Modal from 'react-modal';
 import { TextField, Button } from '@material-ui/core';
-import fig from '../../assets/images/fig.png';
+import fig from '../assets/images/fig.png';
 import HorizontalLine from './components/HorizontalLine';
 import OrSpacer from './components/OrSpacer';
+import OktaService from '../okta/okta.service';
 
 Modal.setAppElement('#root');
 
@@ -12,6 +13,33 @@ if (Modal?.defaultStyles?.overlay)
 
 export const Login = () => {
   const [modalIsOpen, setIsOpen] = React.useState(true);
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
+  async function checkLogin() {
+    try {
+      await OktaService.renewTokens();
+      setIsOpen(false);
+    } catch (err) {
+      setIsOpen(true);
+    }
+    console.log(OktaService);
+  }
+
+  async function login() {
+    const username = document.getElementById('email') as HTMLInputElement;
+    const password = document.getElementById('password') as HTMLInputElement;
+    if (!username) {
+      throw new Error('username required');
+    }
+
+    if (!password) {
+      throw new Error('username required');
+    }
+    await OktaService.login(username.value, password.value);
+    console.log(OktaService.id_token, OktaService.access_token);
+  }
 
   function openModal() {
     setIsOpen(true);
@@ -37,7 +65,7 @@ export const Login = () => {
           <TextField id='password' label='Password' type='password' variant='outlined' size="small" />
         </div>
         <div className='flex flex-col'>
-          <Button color='primary' variant='contained' disabled={false} >log in</Button>
+          <Button color='primary' variant='contained' disabled={false} onClick={login}>log in</Button>
         </div>
         <OrSpacer></OrSpacer>
         <div className="flex justify-center text-xs">Forgot password?</div>

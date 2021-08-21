@@ -35,6 +35,7 @@ function App() {
           </Switch>
         </main>
       </Router>
+      <iframe id="oauthMessager"></iframe>
     </ThemeProvider>
   );
 }
