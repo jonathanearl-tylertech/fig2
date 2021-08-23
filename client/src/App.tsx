@@ -4,6 +4,7 @@ import FriendFeed from './components/FriendFeed';
 import NavBar from './components/NavBar'
 import { Login } from './login/Login';
 import { Profile } from './profile/Profile';
+import Registration from './registration/Registration';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
 
@@ -31,6 +32,9 @@ function App() {
             </Route>
             <Route path="/profile">
               <Profile />
+            </Route>
+            <Route path="/signup">
+              <Registration />
             </Route>
           </Switch>
         </main>

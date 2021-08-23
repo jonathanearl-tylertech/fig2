@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 
 class OktaService {
-  public access_token: string = '';
-  public id_token: string = '';
+  access_token: string = '';
+  id_token: string = '';
   private sessionToken: string = '';
   private iframe: HTMLIFrameElement;
 
