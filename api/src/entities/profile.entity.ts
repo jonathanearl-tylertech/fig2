@@ -1,18 +1,13 @@
-export class Issuer {
-  ['https://dev-840204.okta.com/oauth2/default']: string;
+export class Issuers {
+  default: string;
 }
 
 export class Profile {
   _id: string;
-  
-  issuer: any
-
+  issuers: Issuers
   username: string;
-
   summary: string;
-
   createdAt: Date;
-  
   modifiedAt: Date;
 }
 

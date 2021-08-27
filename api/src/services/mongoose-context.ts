@@ -6,9 +6,8 @@ import { Profile } from '../entities/profile.entity';
 dotenv.config()
 
 const profileSchema = new mongoose.Schema({
-  email: String,
-  name: String,
   username: String,
+  issuer: { 'default': String },
   summary: String,
   createdAt: Date,
   modifiedAt: Date,

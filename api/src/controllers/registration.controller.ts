@@ -25,7 +25,7 @@ export class RegistrationController {
       throw new BadRequestException('email already in use');
     }
 
-    let profile = await this.profileService.findOne(username);
+    let profile = await this.profileService.findOneByUsername(username);
     if (profile) {
       throw new BadRequestException('username already in use');
     }
@@ -50,7 +50,7 @@ export class RegistrationController {
   @Get('validate/username/:username')
   async validateUserName(@Param() params: UsernameParam) {
     const { username } = params;
-    let profile = await this.profileService.findOne(username);
+    let profile = await this.profileService.findOneByUsername(username);
     if (profile) {
       throw new BadRequestException(['username is already in use'])
     }

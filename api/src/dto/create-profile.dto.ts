@@ -1,10 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
+export class Issuers {
+  @ApiProperty({type: String })
+  default: string
+}
+
 export class CreateProfileDto {
   @IsNotEmpty()
-  @ApiProperty({type: String})
-  issuer: string;
+  @ApiProperty({type: Issuers})
+  issuers: Issuers;
 
   @IsNotEmpty()
   @ApiProperty({type: String})

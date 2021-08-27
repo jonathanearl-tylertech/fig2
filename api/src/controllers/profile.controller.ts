@@ -7,7 +7,6 @@ import { CreateProfileDto } from 'src/dto/create-profile.dto';
 import { UserInfo } from 'src/decorators/user-info.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/guards/role.enum';
-import { ProfileDto } from 'src/dto/profile.dto';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -19,15 +18,31 @@ export class ProfileController {
   @ApiOkResponse({ description: 'the found profile', type: Profile })
   @Get('me')
   async findMe(@UserInfo() user) {
-    console.log(user);
-    const { uid, issuer } = user;
-    let profile = await this.profileService.findOneByUid( uid, issuer );
+    const { uid } = user;
+    let profile = await this.profileService.findOneByUid(uid);
     if (!profile) {
-      profile = await this.profileService.create({ issuer: {[issuer as string]: uid}, username: 'i_am_newb' })
+      var currentDate = new Date();
+      var ms = currentDate.getTime();
+      profile = await this.profileService.create({ 
+        issuers: { 
+          default: uid
+        }, 
+        username: `who_am_i_${ms}`, 
+        modifiedAt: currentDate, 
+        createdAt: currentDate
+      })
     }
-    console.log(profile);
-    console.log(typeof profile);
     return profile;
+  }
+
+  @ApiOperation({ summary: 'update profile by username' })
+  @ApiOkResponse({ description: 'the updated profile', type: Profile })
+  @Patch('me')
+  async update(@UserInfo() user, @Body() updateProfileDto: UpdateProfileDto) {
+    const profile = await this.profileService.findOneByUid(user.uid);
+    profile.summary = updateProfileDto.summary;
+    const result = await this.profileService.update(profile);
+    return result;
   }
 
   @ApiOperation({ summary: 'find all profiles' })
@@ -42,7 +57,7 @@ export class ProfileController {
   @ApiOkResponse({ description: 'the found profile', type: Profile })
   @Get(':username')
   async findOne(@Param('username') username: string) {
-    const profile = await this.profileService.findOne(username);
+    const profile = await this.profileService.findOneByUsername(username);
     if (profile === undefined) {
       throw new NotFoundException();
     }
@@ -51,9 +66,11 @@ export class ProfileController {
 
   @ApiOperation({ summary: 'update profile by username' })
   @ApiOkResponse({ description: 'the updated profile', type: Profile })
-  @Patch(':username')
-  update(@Param('username') username: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(username, updateProfileDto);
+  @Patch()
+  async updateProfile(@Body() updateProfileDto: UpdateProfileDto) {
+    let profile = await this.profileService.findOneById(updateProfileDto.id);
+    profile = {...profile, ...updateProfileDto}
+    return await this.profileService.update(profile);
   }
 
   @ApiOperation({ summary: 'delete profile by username' })
@@ -67,15 +84,15 @@ export class ProfileController {
   @ApiOperation({ summary: 'add profile profile' })
   @ApiOkResponse({ description: 'the new profile', type: Profile })
   @Post()
-  async create(@Body() createProfileDto: CreateProfileDto) {
-    const { username } = createProfileDto;
+  async create(@Body() newProfile: CreateProfileDto) {
+    const { username } = newProfile;
 
-    let profile = await this.profileService.findOne(username);
+    let profile = await this.profileService.findOneByUsername(username);
     if (profile) {
       throw new BadRequestException('username already taken');
     }
 
-    profile = await this.profileService.create(createProfileDto);
+    profile = await this.profileService.create({...newProfile});
     return profile;
   }
 }

@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProfileDto {
   @ApiProperty({type: String})
-  name: String;
+  id: string;
+  
   @ApiProperty({type: String})
-  summary: String;
+  summary: string;
 }
