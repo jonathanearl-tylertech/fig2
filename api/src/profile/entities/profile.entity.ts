@@ -9,5 +9,6 @@ export class Profile {
   summary: string;
   createdAt: Date;
   modifiedAt: Date;
+  __v: number;
 }
 
