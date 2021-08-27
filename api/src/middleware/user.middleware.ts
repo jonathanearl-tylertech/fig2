@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common';
-import { OktaService } from 'src/services/okta/okta.service';
+import { OktaService } from 'src/services/okta.service';
 
 @Injectable()
 export class UserMiddleware implements NestMiddleware {

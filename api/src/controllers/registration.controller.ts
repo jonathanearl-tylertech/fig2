@@ -1,11 +1,11 @@
 import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { OktaUser } from 'src/okta/entities/okta-user.entity';
-import { OktaService } from 'src/okta/services/okta.service';
-import { ProfileService } from 'src/profile/services/profile/profile.service';
-import { CreateRegistrationDto } from './dto/create-registration.dto';
-import { EmailParam } from './dto/email-param.dto';
-import { UsernameParam } from './dto/username-param.dto';
+import { OktaUser } from 'src/entities/okta-user.entity';
+import { OktaService } from 'src/services/okta.service';
+import { ProfileService } from 'src/services/profile.service';
+import { CreateRegistrationDto } from '../dto/create-registration.dto';
+import { EmailParam } from 'src/dto/email-param.dto';
+import { UsernameParam } from 'src/dto/username-param.dto';
 
 @ApiTags('registration')
 @Controller('registration')

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { Profile } from '../../entities/profile.entity';
+import { Profile } from '../entities/profile.entity';
 
 dotenv.config()
 
@@ -12,6 +12,19 @@ const profileSchema = new mongoose.Schema({
   summary: String,
   createdAt: Date,
   modifiedAt: Date,
+}, {
+  toObject: {
+    transform: function (doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  },
+  toJSON: {
+    transform: function (doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+    }
+  }
 });
 
 @Injectable()
@@ -21,7 +34,7 @@ export class MongooseContext {
   constructor() {
     const { PROFILE_MONGO_ADDRESS, PROFILE_MONGO_USERNAME, PROFILE_MONGO_PASSWORD, PROFILE_TABLE } = process.env;
     const connectionString = `mongodb://${PROFILE_MONGO_ADDRESS}/${PROFILE_TABLE}`;
-  
+
     console.log('[db] connecting to:', connectionString)
     mongoose.connect(
       connectionString,
