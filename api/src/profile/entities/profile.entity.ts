@@ -4,6 +4,7 @@ export class Issuers {
 
 export class Profile {
   _id: string;
+  profileImgUrl: string
   issuers: Issuers
   username: string;
   summary: string;

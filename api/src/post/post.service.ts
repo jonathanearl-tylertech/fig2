@@ -6,9 +6,6 @@ import { PostModel } from './db/post.model';
 
 @Injectable()
 export class PostService {
-
-  constructor() {}
-
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const post: Partial<Post> = {
       ...createPostDto,
@@ -20,9 +17,8 @@ export class PostService {
   }
 
   async findAll(): Promise<Post[]> {
-    const posts = await PostModel.find({});
-    console.log(posts);
-    return posts.map(post => post.toObject());
+    const posts = await PostModel.find({}).lean();
+    return posts;
   }
 
   findOne(id: number) {

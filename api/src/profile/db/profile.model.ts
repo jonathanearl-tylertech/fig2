@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { Profile } from '../entities/profile.entity';
 
+const Issuer = new mongoose.Schema({
+  default: String
+});
 
 const profileSchema = new mongoose.Schema({
   username: String,
-  issuer: { 'default': String },
+  profileImgUrl: String,
+  issuers: Issuer,
   summary: String,
   createdAt: Date,
   modifiedAt: Date,
