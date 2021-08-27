@@ -15,6 +15,9 @@ const { WEBAPI_PORT, REDIS_SECRET } = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  app.setGlobalPrefix('api/v1');
+  
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors();
@@ -32,9 +35,10 @@ async function bootstrap() {
     .setTitle('FIG api')
     .setDescription('An api for FIG client')
     .setVersion('1.0')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   await app.listen(WEBAPI_PORT ? WEBAPI_PORT : 5000);
   console.log('now listening on localhost:5000!')

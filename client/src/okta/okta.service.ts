@@ -5,9 +5,11 @@ class OktaService {
   id_token: string = '';
   private sessionToken: string = '';
   private iframe: HTMLIFrameElement;
+  private oktaOrgUrl: string;
 
   constructor() {
     this.iframe = this.getIframe();
+    this.oktaOrgUrl = process.env.REACT_APP_OKTA_ORG_URL as string;
   }
 
   private getIframe() {
@@ -39,7 +41,7 @@ class OktaService {
       },
       body: JSON.stringify(body),
     }
-    const res = await fetch('https://dev-840204.okta.com/api/v1/authn', requestInit)
+    const res = await fetch(`${this.oktaOrgUrl}/api/v1/authn`, requestInit)
     const data = await res.json();
     const { sessionToken, status } = data;
 
@@ -53,42 +55,48 @@ class OktaService {
 
   renewTokens() {
     return new Promise((resolve, reject) => {
-
       // set token when passed by okta
       const setTokenFunction = (event: any) => {
         window.removeEventListener("message", setTokenFunction);
-        this.id_token = event.data.id_token;
-        this.access_token = event.data.access_token;
+        console.log(event);
+        this.id_token = event.data?.id_token;
+        this.access_token = event.data?.access_token;
         resolve(true);
       };
 
-      // listen for tokens
-      window.addEventListener("message", setTokenFunction, false);
+      try {
+        // listen for tokens
+        window.addEventListener("message", setTokenFunction, false);
 
-      // set timeout
-      setTimeout(() => {
+        // set timeout
+        setTimeout(() => {
+          window.removeEventListener("message", setTokenFunction);
+          reject(false);
+        }, 10000);
+
+        // request token in iframe
+        var state = crypto.randomBytes(64).toString('hex');
+        var nonce = crypto.randomBytes(64).toString('hex');
+        const url = new URL(`${this.oktaOrgUrl}/oauth2/default/v1/authorize`)
+        url.searchParams.append('client_id', '0oa1mxsdbeeTtGz8S4x7');
+        url.searchParams.append('response_type', 'token')
+        url.searchParams.append('response_mode', 'okta_post_message');
+        url.searchParams.append('scope', 'openid profile groups');
+        url.searchParams.append('redirect_uri', 'http://localhost:3000');
+        url.searchParams.append('prompt', 'none');
+        url.searchParams.append('state', state);
+        url.searchParams.append('nonce', nonce);
+
+        if (this.sessionToken) {
+          url.searchParams.append('sessionToken', this.sessionToken);
+        }
+
+        this.iframe.src = url.toString();
+      } catch (err) {
+        console.log('iframe error?', err);
         window.removeEventListener("message", setTokenFunction);
-        reject(false);
-      }, 10000);
-
-      // request token in iframe
-      var state = crypto.randomBytes(64).toString('hex');
-      var nonce = crypto.randomBytes(64).toString('hex');
-      const url = new URL('https://dev-840204.okta.com/oauth2/default/v1/authorize')
-      url.searchParams.append('client_id', '0oa1mxsdbeeTtGz8S4x7');
-      url.searchParams.append('response_type', 'id_token token')
-      url.searchParams.append('response_mode', 'okta_post_message');
-      url.searchParams.append('scope', 'openid email profile');
-      url.searchParams.append('redirect_uri', 'http://localhost:3000');
-      url.searchParams.append('prompt', 'none');
-      url.searchParams.append('state', state);
-      url.searchParams.append('nonce', nonce);
-
-      if (this.sessionToken) {
-        url.searchParams.append('sessionToken', this.sessionToken);
+        return false;
       }
-
-      this.iframe.src = url.toString();
     });
   }
 }

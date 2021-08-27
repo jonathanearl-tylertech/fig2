@@ -36,6 +36,7 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^10.0.0",
     "express-session": "^1.17.2",
+    "jose": "^3.15.4",
     "mongoose": "^5.13.7",
     "openid-client": "^4.7.4",
     "redis": "^3.1.2",

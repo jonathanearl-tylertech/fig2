@@ -13,6 +13,7 @@ if (Modal?.defaultStyles?.overlay)
 
 export const Login = () => {
   const [modalIsOpen, setIsOpen] = React.useState(true);
+
   useEffect(() => {
     checkLogin();
   }, []);
@@ -20,11 +21,12 @@ export const Login = () => {
   async function checkLogin() {
     try {
       await OktaService.renewTokens();
-      setIsOpen(false);
+      if(OktaService.access_token) {
+        setIsOpen(false);
+      }
     } catch (err) {
       setIsOpen(true);
     }
-    console.log(OktaService);
   }
 
   async function login() {
@@ -39,6 +41,13 @@ export const Login = () => {
     }
     await OktaService.login(username.value, password.value);
     console.log(OktaService.id_token, OktaService.access_token);
+    const options = {
+      headers: {
+        'authorization': `bearer ${OktaService.access_token}`
+      }
+    }
+    fetch(`${process.env.REACT_APP_FIG_BASE_API}/profile/me`, options).then(res => res.json()).then(res => console.log(res));
+
   }
 
   function openModal() {
