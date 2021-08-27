@@ -1,6 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { MongooseContext } from './mongoose-context';
-import { Profile } from '../entities/profile.entity';
+import { MongooseContext } from './db/mongoose-context';
+import { Profile } from './entities/profile.entity';
 import { Model } from 'mongoose';
 
 @Injectable()

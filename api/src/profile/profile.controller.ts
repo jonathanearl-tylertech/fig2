@@ -1,9 +1,9 @@
 import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, Post, BadRequestException } from '@nestjs/common';
-import { ProfileService } from 'src/services/profile.service';
-import { UpdateProfileDto } from 'src/dto/update-profile.dto';
+import { ProfileService } from 'src/profile/profile.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Profile } from 'src/entities/profile.entity';
-import { CreateProfileDto } from 'src/dto/create-profile.dto';
+import { Profile } from './entities/profile.entity';
+import { CreateProfileDto } from './dto/create-profile.dto';
 import { UserInfo } from 'src/decorators/user-info.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/guards/role.enum';

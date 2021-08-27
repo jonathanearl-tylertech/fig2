@@ -1,14 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { UserMiddleware } from './middleware/user.middleware';
 import { OktaService } from 'src/services/okta.service';
-import { ProfileService } from './services/profile.service';
-import { ProfileController } from './controllers/profile.controller';
-import { RegistrationController } from './controllers/registration.controller';
-import { MongooseContext } from './services/mongoose-context';
+import { ProfileModule } from './profile/profile.module';
+import { RegistrationModule } from './registration/registration.module';
 
 @Module({
-  controllers: [ProfileController, RegistrationController],
-  providers: [ProfileService, OktaService, MongooseContext]
+  providers: [OktaService],
+  imports: [ProfileModule, RegistrationModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
