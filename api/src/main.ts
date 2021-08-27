@@ -6,6 +6,7 @@ import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import { ValidationPipe } from '@nestjs/common';
+import { Db } from 'src/db/db-context';
 
 let RedisStore = connectRedis(session);
 let redisClient = redis.createClient();
@@ -14,6 +15,9 @@ dotenv.config();
 const { WEBAPI_PORT, REDIS_SECRET } = process.env;
 
 async function bootstrap() {
+  await Db.connect();
+  await Db.seed();
+  
   const app = await NestFactory.create(AppModule);
   
   app.setGlobalPrefix('api/v1');
