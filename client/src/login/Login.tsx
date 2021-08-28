@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Modal from 'react-modal';
 import { TextField, Button } from '@material-ui/core';
 import fig from '../assets/images/fig.png';
 import HorizontalLine from './components/HorizontalLine';
-import OrSpacer from './components/OrSpacer';
-import OktaService from '../okta/okta.service';
+import { AuthHelper } from '../services/auth-helper';
 
 Modal.setAppElement('#root');
 
@@ -13,71 +12,57 @@ if (Modal?.defaultStyles?.overlay)
 
 export const Login = () => {
   const [modalIsOpen, setIsOpen] = React.useState(true);
-
-  useEffect(() => {
-    checkLogin();
-  }, []);
-
-  async function checkLogin() {
-    try {
-      await OktaService.renewTokens();
-      if(OktaService.access_token) {
-        setIsOpen(false);
-      }
-    } catch (err) {
-      setIsOpen(true);
-    }
-  }
+  const [credentials, setCredentials] = React.useState({ email: '', password: '' })
+  const [isFormValid, setIsFormValid] = React.useState(false);
+  const [loginError, setLoginError] = React.useState('');
 
   async function login() {
-    const username = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-    if (!username) {
-      throw new Error('username required');
+    try {
+      await AuthHelper.login(credentials.email, credentials.password);
+      setCredentials({email: '', password: ''});
+      setIsFormValid(false);
+      setIsOpen(false);
+      setLoginError('');
+    } catch (err) {
+      setLoginError('Could not validate credentials, please try again later');
+      console.warn(err);
     }
+  }
 
-    if (!password) {
-      throw new Error('username required');
-    }
-    await OktaService.login(username.value, password.value);
-    console.log(OktaService.id_token, OktaService.access_token);
-    const options = {
-      headers: {
-        'authorization': `bearer ${OktaService.access_token}`
+  function handler(id: string, value: string) {
+    const updateCredentials = { ...credentials };
+    switch(id) {
+      case 'email': {
+        updateCredentials.email = value;
+        break;
+      }
+      case 'password': {
+        updateCredentials.password = value;
+        break;
       }
     }
-    fetch(`${process.env.REACT_APP_FIG_BASE_API}/profile/me`, options).then(res => res.json()).then(res => console.log(res));
-
-  }
-
-  function openModal() {
-    setIsOpen(true);
-  }
-
-  function closeModal() {
-    setIsOpen(false);
+    setCredentials(updateCredentials);
+    setIsFormValid(updateCredentials.email !== '' && updateCredentials.password !== '');
   }
 
   return (
     <Modal
       isOpen={modalIsOpen}
-      onRequestClose={closeModal}
       style={modalStyle}
       contentLabel="Login"
     >
       <form className='flex flex-col py-8 px-12'>
         <img className='mx-auto mb-4 h-10 w-12' src={fig} />
+        { loginError && <div className="flex justify-center text-sm py-4">Don't have an account? Sign Up</div> }
         <div className='flex flex-col mb-2'>
-          <TextField id='email' label='Email' variant='outlined' size='small' />
+          <TextField id='email' label='Email' variant='outlined' size='small' onBlur={(e) => handler(e.target.id, e.target.value)}/>
         </div>
         <div className='flex flex-col mb-4'>
-          <TextField id='password' label='Password' type='password' variant='outlined' size="small" />
+          <TextField id='password' label='Password' type='password' variant='outlined' size="small" onBlur={(e) => handler(e.target.id, e.target.value)} />
         </div>
         <div className='flex flex-col'>
-          <Button color='primary' variant='contained' disabled={false} onClick={login}>log in</Button>
+          <Button color='primary' variant='contained' disabled={!isFormValid} onClick={login}>log in</Button>
         </div>
-        <OrSpacer></OrSpacer>
-        <div className="flex justify-center text-xs">Forgot password?</div>
       </form>
       <HorizontalLine></HorizontalLine>
       <div className="flex justify-center text-sm py-4">Don't have an account? Sign Up</div>
