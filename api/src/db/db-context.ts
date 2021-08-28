@@ -11,7 +11,6 @@ const dbSeeder = new DbSeeder();
 class DbContext {
   async connect() {
     try {
-      console.log('[db] connecting to:', connectionString)
       await mongoose.connect(
         connectionString,
         {

@@ -65,17 +65,14 @@ export class OktaService {
     },
 
     verifyToken: async (accessToken: string) => {
-      console.log(accessToken)
       try {
         const { payload, protectedHeader } = await jwtVerify(accessToken, this.JWKS, {
           issuer: `${OKTA_ORG_URL}oauth2/default`,
           audience: 'api://default'
         })
-        console.log('protected header', protectedHeader)
-        console.log('payload', payload)
         return payload;
       } catch (err) {
-        console.log('unable to authroize user', err)
+        console.error('unable to authroize user', err)
         throw new UnauthorizedException(err.message)
       }
     }

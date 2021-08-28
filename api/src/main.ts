@@ -45,6 +45,5 @@ async function bootstrap() {
   SwaggerModule.setup('swagger', app, document);
 
   await app.listen(WEBAPI_PORT ? WEBAPI_PORT : 5000);
-  console.log('now listening on localhost:5000!')
 }
 bootstrap();
