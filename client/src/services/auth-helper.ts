@@ -1,8 +1,12 @@
 import crypto from 'crypto';
 
-class OktaService {
-  access_token: string = '';
-  id_token: string = '';
+// okta specific due to special implicit flow
+class AuthenticationHelper {
+  private access_token: string = '';
+  private accessExpires: number = 0;
+  private id_token: string = '';
+  private state: string = '';
+  private nonce: string = '';
   private sessionToken: string = '';
   private iframe: HTMLIFrameElement;
   private oktaOrgUrl: string;
@@ -53,6 +57,33 @@ class OktaService {
     await this.renewTokens();
   }
 
+  async getToken() {
+    if (!this.access_token)
+      await this.renewTokens();
+    
+    const isValid = this.validateToken(this.access_token);
+    console.log({isValid})
+    if (!isValid)
+      await this.renewTokens();
+
+    return this.access_token;
+  }
+
+  validateToken(token: string) {
+    try {
+      const data = token.split('.')[1];
+      const userClaims = atob(data) as any;
+      console.log(userClaims)
+      const now = Date.now().valueOf() / 1000
+      const exp = userClaims['exp'] as number;
+      return now > exp;
+    } catch (err) {
+      console.warn('could not validate token', err);
+      return false;
+    }
+
+  }
+
   renewTokens() {
     return new Promise((resolve, reject) => {
       // set token when passed by okta
@@ -61,6 +92,7 @@ class OktaService {
         console.log(event);
         this.id_token = event.data?.id_token;
         this.access_token = event.data?.access_token;
+        this.validateToken(this.access_token);
         resolve(true);
       };
 
@@ -95,10 +127,10 @@ class OktaService {
       } catch (err) {
         console.log('iframe error?', err);
         window.removeEventListener("message", setTokenFunction);
-        return false;
+        reject(false);
       }
     });
   }
 }
 
-export default new OktaService();
+export const AuthHelper = new AuthenticationHelper();
