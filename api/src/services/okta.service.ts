@@ -68,7 +68,7 @@ export class OktaService {
       console.log(accessToken)
       try {
         const { payload, protectedHeader } = await jwtVerify(accessToken, this.JWKS, {
-          issuer: 'https://dev-840204.okta.com/oauth2/default',
+          issuer: `${OKTA_ORG_URL}oauth2/default`,
           audience: 'api://default'
         })
         console.log('protected header', protectedHeader)
