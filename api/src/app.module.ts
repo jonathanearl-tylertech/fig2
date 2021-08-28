@@ -5,14 +5,14 @@ import { ProfileModule } from './profile/profile.module';
 import { RegistrationModule } from './registration/registration.module';
 import { PostModule } from './post/post.module';
 import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './guards/roles.guard';
+import { GroupsGuard } from './guards/groups.guard';
 
 @Module({
   providers: [
     OktaService,
     {
       provide: APP_GUARD,
-      useClass: RolesGuard,
+      useClass: GroupsGuard,
     },
   ],
   imports: [ProfileModule, RegistrationModule, PostModule],

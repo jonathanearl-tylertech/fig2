@@ -5,15 +5,15 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Profile } from './entities/profile.entity';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UserInfo } from 'src/decorators/user-info.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/guards/role.enum';
+import { Groups } from 'src/decorators/groups.decorator';
+import { Group } from 'src/guards/group.enum';
 
 @ApiTags('profile')
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Roles(Role.User)
+  @Groups(Group.User)
   @ApiOperation({ summary: 'get own profile'})
   @ApiOkResponse({ description: 'the found profile', type: Profile })
   @Get('me')

@@ -1,3 +1,3 @@
-export enum Role {
+export enum Group {
   User = 'Everyone',
 }
