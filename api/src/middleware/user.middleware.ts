@@ -28,7 +28,7 @@ export class UserMiddleware implements NestMiddleware {
         throw new BadRequestException({ message: 'unrecoginized authorization header expecting: "bearer {token}"'});
       }
       
-      const userClaims = await this.oktaService.User.verifyToken(token);
+      const userClaims = await this.oktaService.User.getUserClaims(token);
       return userClaims;
     } catch(err) {
       console.error('unable to validate access_token', err);

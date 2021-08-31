@@ -1,8 +1,8 @@
-import react, { useState } from 'react';
+import React, { useState } from 'react';
 import { Button, TextField } from '@material-ui/core';
 import fig from '../assets/images/fig.png';
-import registrationService from './registration.service';
-import IRegistrationState from './interfaces/registration-state.interface';
+import registrationService from '../services/registration.service';
+import IRegistrationState from '../interfaces/registration-state.interface';
 import CreateUserDto from '../dtos/create-user.dto';
 
 function Registration() {
@@ -15,7 +15,6 @@ function Registration() {
 
   const register = function() {
     const user: CreateUserDto = { ...state.fields };
-    console.log(user);
     registrationService.registerUser(user)
   }
 
@@ -60,7 +59,6 @@ function Registration() {
         return await registrationService.validateUsername(fieldValue);     
       }
       case 'password': {
-        const respo = registrationService.validatePassword(fieldValue)
         return registrationService.validatePassword(fieldValue);
       }
       case 'passwordVerification': {
@@ -73,7 +71,7 @@ function Registration() {
 
   return (
     <form className='flex flex-col py-8 px-12 m-auto' style={{ width: '415px', padding: '0 40', border: '1px solid rgb(219, 219, 219)' }}>
-      <img className='mx-auto mb-4 h-10 w-12' src={fig} />
+      <img className='mx-auto mb-4 h-10 w-12' src={fig} alt="fig logo"/>
       <div className='flex flex-col mb-4'>
         <TextField id='email' label='Email' error={!!state.errors.email} required variant='outlined' size='small' onBlur={handleChange} helperText={state.errors.email}/>
       </div>

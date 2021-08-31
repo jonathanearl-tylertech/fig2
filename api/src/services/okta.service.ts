@@ -64,9 +64,10 @@ export class OktaService {
       }
     },
 
-    verifyToken: async (accessToken: string) => {
+    // verify token and return user claims
+    getUserClaims: async (accessToken: string) => {
       try {
-        const { payload, protectedHeader } = await jwtVerify(accessToken, this.JWKS, {
+        const { payload } = await jwtVerify(accessToken, this.JWKS, {
           issuer: `${OKTA_ORG_URL}oauth2/default`,
           audience: 'api://default'
         })

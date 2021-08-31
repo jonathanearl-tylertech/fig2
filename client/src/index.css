@@ -9,6 +9,7 @@
 }
 
 body {
+  overflow: hidden;
   margin: 0;
   font-family: 'Liberation Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
