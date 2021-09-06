@@ -60,7 +60,6 @@ class AuthenticationHelper {
     const url = new URL(`${this.oktaOrgUrl}/login/signout`)
     url.searchParams.append('id_token_hint', this.idToken);
     url.searchParams.append('post_logout_redirect_uri', 'http://localhost:3000');
-
     const iframe = this.getIframe();
     iframe.src = url.toString();
   }
@@ -83,6 +82,7 @@ class AuthenticationHelper {
       const encodedData = token.split('.')[1];
       const data = atob(encodedData) as any;
       const userClaims = JSON.parse(data);
+      console.log(userClaims);
       const now = Date.now().valueOf() / 1000;
       const exp = userClaims['exp'] as number;
       return exp > now;

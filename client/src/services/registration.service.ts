@@ -1,4 +1,4 @@
-import ProfileDto from "../dtos/profile.dto";
+import { ProfileDto } from "../dtos/profile.dto";
 
 class RegistrationService {
   baseUrl = 'http://localhost:5000/registration'

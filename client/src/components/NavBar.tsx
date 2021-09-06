@@ -1,4 +1,3 @@
-import { Button } from '@material-ui/core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -19,10 +18,13 @@ function NavBar() {
     <nav className="w-screen h-12 bg-white mb-12">
       <ul className="max-w-4xl flex flex-row justify-end mx-auto">
         <li className="flex h-12 p-3">
+          <Link to={'/explore'}>Explore</Link>
+        </li>
+        <li className="flex h-12 p-3">
           <Link to={`/${userInfo?.username}`}>Profile</Link>
         </li>
-        <li>
-          <Button onClick={logout}>logout</Button>
+        <li className="flex h-12 p-3">
+          <Link to={'/explore'} onClick={logout}>Logout</Link>
         </li>
       </ul>
     </nav>

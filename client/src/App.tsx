@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux'
-import FriendFeed from './components/FriendFeed';
-import NavBar from './components/NavBar'
-import { Login } from './components/Login';
-import Registration from './components/Registration';
+import { AuthHelper } from './services/auth-helper';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
-import { endUserSession, SessionState, startUserSession } from './feature/sessionslice';
-import { AuthHelper } from './services/auth-helper';
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from './store';
+import { endUserSession, SessionState, startUserSession } from './feature/sessionslice';
+import { Login } from './components/Login';
 import { ProfileDetail } from './components/ProfileDetail';
+import { PostsGrid } from './components/PostsGrid';
+import FriendFeed from './components/FriendFeed';
+import NavBar from './components/NavBar'
+import Registration from './components/Registration';
+import { Profile } from './pages/Profile';
 
 const theme = createTheme({
   palette: {
@@ -24,8 +26,6 @@ const theme = createTheme({
 });
 
 function App() {
-  // const { username }: { username: string} = useParams();
-  // console.log(username, useParams());
   const hasSession = useSelector((state: RootState) => state.session.hasSession);
   const dispatch = useDispatch()
 
@@ -57,13 +57,14 @@ function App() {
             <Route path="/feed">
               <FriendFeed />
             </Route>
+            <Route path="/explore">
+              {/* <PostsGrid></PostsGrid> */}
+            </Route>
             <Route path="/signup">
               <Registration />
             </Route>
             <Route path="/:username">
-            { hasSession === SessionState.isActive && 
-              <ProfileDetail />
-            }
+              <Profile />
             </Route>
           </Switch>
         </main>
