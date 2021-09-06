@@ -36,6 +36,6 @@ export class PostService {
 
   async query(query: any) {
     const posts = await PostModel.find(query).lean();
-    return posts;
+    return posts.sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf());
   }
 }

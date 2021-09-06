@@ -11,10 +11,10 @@ export class PostController {
 
   @Get('q')
   searchPosts(@Query() q) {
-    console.log(q);
-    const query = {profileId: q?.profileId};
-    console.log(query);
-    return this.postService.query(query)
+    const query: any = {};
+    if (q.profileId)
+      query.profileId = q.profileId;
+    return this.postService.query(query);
   }
 
   @Post()
@@ -28,13 +28,11 @@ export class PostController {
 
   @Get()
   findAll() {
-    console.log('findall');
     return this.postService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    console.log('findone');
     return this.postService.findOne(id);
   }
 

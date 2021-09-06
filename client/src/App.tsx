@@ -13,6 +13,7 @@ import FriendFeed from './components/FriendFeed';
 import NavBar from './components/NavBar'
 import Registration from './components/Registration';
 import { Profile } from './pages/Profile';
+import { Explore } from './pages/Explore';
 
 const theme = createTheme({
   palette: {
@@ -58,7 +59,7 @@ function App() {
               <FriendFeed />
             </Route>
             <Route path="/explore">
-              {/* <PostsGrid></PostsGrid> */}
+              <Explore />
             </Route>
             <Route path="/signup">
               <Registration />
