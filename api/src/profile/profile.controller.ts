@@ -26,7 +26,7 @@ export class ProfileController {
       profile = await this.profileService.create({ 
         issuers: { 
           default: uid
-        }, 
+        },
         username: `who_am_i_${ms}`, 
         modifiedAt: currentDate, 
         createdAt: currentDate
