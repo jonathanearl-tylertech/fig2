@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, Post, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, Post, BadRequestException, Query } from '@nestjs/common';
 import { ProfileService } from 'src/profile/profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -26,13 +26,26 @@ export class ProfileController {
       profile = await this.profileService.create({ 
         issuers: { 
           default: uid
-        }, 
+        },
         username: `who_am_i_${ms}`, 
         modifiedAt: currentDate, 
         createdAt: currentDate
       })
     }
     return profile;
+  }
+
+  @ApiOperation({ summary: 'query profile'})
+  @ApiOkResponse({ description: 'the found profile', type: Profile })
+  @Get('q')
+  async query(@Query() q) {
+    const { _id } = q;
+
+    if (_id) {
+      return await this.profileService.findOneById(_id);
+    }
+
+    return new BadRequestException('_id required');
   }
 
   @ApiOperation({ summary: 'update profile by username' })

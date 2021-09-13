@@ -16,6 +16,7 @@ const { WEBAPI_PORT, REDIS_SECRET } = process.env;
 
 async function bootstrap() {
   await Db.connect();
+  await Db.drop();
   await Db.seed();
   
   const app = await NestFactory.create(AppModule);

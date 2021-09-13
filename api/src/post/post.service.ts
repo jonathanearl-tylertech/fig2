@@ -21,15 +21,21 @@ export class PostService {
     return posts;
   }
 
-  findOne(id: number) {
-    throw new NotImplementedException(`This action returns a #${id} post`);
+  async findOne(id: string) {
+    const post = await PostModel.findById(id).lean();
+    return post;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
+  async update(id: string, updatePostDto: UpdatePostDto) {
     throw new NotImplementedException(`This action updates a #${id} post`);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     throw new NotImplementedException(`This action removes a #${id} post`);
+  }
+
+  async query(query: any) {
+    const posts = await PostModel.find(query).lean();
+    return posts.sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf());
   }
 }

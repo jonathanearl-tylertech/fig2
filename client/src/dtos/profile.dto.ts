@@ -1,8 +1,7 @@
-import PostDto from './post.dto';
-
-export default interface ProfileDto {
+export interface ProfileDto {
+  _id: string;
+  name: string;
   username: string;
   email: string;
   summary: string;
-  posts: PostDto[];
 }
