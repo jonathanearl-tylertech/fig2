@@ -4,28 +4,24 @@ import { useParams } from 'react-router';
 import { PostsGrid } from '../components/PostsGrid';
 import { ProfileDetail } from '../components/ProfileDetail';
 import { SessionState } from '../feature/sessionslice';
-import { AuthHelper } from '../services/auth-helper';
 import { RootState } from '../store';
 import { ProfileDto } from '../dtos/profile.dto';
+import profileService from '../services/profile.service';
+import postService from '../services/post.service';
+import { PostDto } from '../dtos/post.dto';
 
 export const Profile = () => {
   const hasSession = useSelector((state: RootState) => state.session.hasSession);
   const { username }: { username: string } = useParams();
   const [profile, setProfile] = useState<ProfileDto | undefined>(undefined);
-  const [posts, setPostsState] = useState([]);
+  const [posts, setPostsState] = useState<PostDto[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (hasSession !== SessionState.isActive)
         return;
-
       try {
-        const token = await AuthHelper.getToken();
-        const { REACT_APP_FIG_BASE_API } = process.env;
-        const options = { headers: { authorization: `Bearer ${token}` } };
-        const url = `${REACT_APP_FIG_BASE_API}/profile/${username}`;
-        const response = await fetch(url, options);
-        const result = await response.json();
+        const result = await profileService.getProfileByUsername(username);
         setProfile(result);
         await fetchPosts(result._id)
       } catch (err) {
@@ -35,12 +31,7 @@ export const Profile = () => {
 
     const fetchPosts = async (profileId: string) => {
       try {
-        const { REACT_APP_FIG_BASE_API } = process.env;
-        const url = new URL(`${REACT_APP_FIG_BASE_API}/post/q`);
-        const params = url.searchParams;
-        params.append('profileId', profileId);
-        const response = await fetch(url.toString());
-        const result = await response.json();
+        const result = await postService.search({profileId: profileId})
         setPostsState(result);
       } catch(err) {
         console.log(err);
