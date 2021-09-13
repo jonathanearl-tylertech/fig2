@@ -1,6 +1,7 @@
-const HorizontalLine = () => {
+const HorizontalLine = (props: {className?: string}) => {
+  const { className } = props;
   return (
-    <div className="flex flex-grow self-center" style={{ height: '1px', backgroundColor: 'rgb(219, 219, 219)' }}></div>
+    <div className={`w-full ${className? className : ''}`} style={{ height: '1px', backgroundColor: 'rgb(219, 219, 219)' }}></div>
   )
 }
 
