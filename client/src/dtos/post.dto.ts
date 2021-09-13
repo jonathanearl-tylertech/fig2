@@ -1,6 +1,7 @@
 export interface PostDto {
-  author: string;
+  _id: string;
+  profileId: string;
   summary: string;
-  img: string;
+  imgUrl: string;
   createdAt: Date;
 }

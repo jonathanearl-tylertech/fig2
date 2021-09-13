@@ -5,15 +5,13 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from './store';
-import { endUserSession, SessionState, startUserSession } from './feature/sessionslice';
+import { endUserSession, startUserSession } from './feature/sessionslice';
 import { Login } from './components/Login';
-import { ProfileDetail } from './components/ProfileDetail';
-import { PostsGrid } from './components/PostsGrid';
-import FriendFeed from './components/FriendFeed';
 import NavBar from './components/NavBar'
 import Registration from './components/Registration';
 import { Profile } from './pages/Profile';
 import { Explore } from './pages/Explore';
+import { Post } from './pages/Post';
 
 const theme = createTheme({
   palette: {
@@ -27,7 +25,6 @@ const theme = createTheme({
 });
 
 function App() {
-  const hasSession = useSelector((state: RootState) => state.session.hasSession);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -55,8 +52,8 @@ function App() {
           <NavBar></NavBar>
           <Login></Login>
           <Switch>
-            <Route path="/feed">
-              <FriendFeed />
+            <Route path="/post/:postId">
+              <Post />  
             </Route>
             <Route path="/explore">
               <Explore />
