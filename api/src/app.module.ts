@@ -15,7 +15,11 @@ import { GroupsGuard } from './guards/groups.guard';
       useClass: GroupsGuard,
     },
   ],
-  imports: [ProfileModule, RegistrationModule, PostModule],
+  imports: [
+    ProfileModule,
+    RegistrationModule,
+    PostModule,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
