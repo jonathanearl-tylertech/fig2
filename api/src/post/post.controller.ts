@@ -7,6 +7,8 @@ import { S3StorageService } from 'src/services/storage/S3Storage.service';
 import { UserInfo } from 'src/decorators/user-info.decorator';
 import { Groups } from 'src/decorators/groups.decorator';
 import { Group } from 'src/guards/group.enum';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { ProfileService } from 'src/profile/profile.service';
 
 @ApiTags('post')
 @Controller('post')
@@ -14,6 +16,7 @@ export class PostController {
 
   constructor(
     private readonly postService: PostService,
+    private readonly profileService: ProfileService,
     private readonly s3StorageService: S3StorageService,
   ) {}
 
@@ -33,31 +36,42 @@ export class PostController {
   }
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    try {
-      return this.postService.create(createPostDto);
-    } catch(err) {
-      console.error(err);
-    }
+  createPost(@Body() createPostDto: CreatePostDto) {
+    return this.postService.create(createPostDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.postService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const post = await this.postService.findOne(id);
+    const profileIds = post.comments.map(c => c.profileId);
+    const profiles = await this.profileService.findAll(profileIds);
+    return {
+      ...post,
+      comments: post.comments.map(c => ({ ...c, username: profiles.filter(p => p._id !== c.profileId)[0].username }))
+    }
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(id, updatePostDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  removePost(@Param('id') id: string) {
+    return this.postService.remove(id);
+  }
+
+  @Groups(Group.User)
+  @Post(':id/comment')
+  async createComment(@Param('id') id: string, @Body() createPostDto: CreateCommentDto, @UserInfo() userInfo) {
+    const profile = await this.profileService.findOneByUid(userInfo.uid);
+    console.log(profile);
+    const comment = { ...createPostDto, profileId: profile._id};
+    await this.postService.addComment(id, comment)
   }
 }
