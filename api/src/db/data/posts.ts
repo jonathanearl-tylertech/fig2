@@ -7,6 +7,9 @@ export const PostSeedData: Partial<Post>[] = [
     "imgUrl": "https://placedog.net/900/650/b",
     "description": "just a small town boy, living in a hello world!",
     "createdAt": new Date("2021-08-27T21:02:51.780Z"),
+    "comments": [
+      { "message": "nononono", "createdAt": new Date("2021-08-28T21:02:51.780Z"), "profileId": "61288d28b4484d717b8ce494" }
+    ],
     "__v": 0
   },
   {

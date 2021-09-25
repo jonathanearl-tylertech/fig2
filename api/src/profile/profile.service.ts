@@ -11,9 +11,14 @@ export class ProfileService {
     return newProfile.toObject();
   }
 
-  async findAll(): Promise<Profile[]> {
-    const profiles = await ProfileModel.find({}).lean();
-    return profiles;
+  async findAll(idList?: string[]): Promise<Profile[]> {
+    let result: Profile[];
+    if (idList) {
+      result = await ProfileModel.find({ '_id': { $in: idList } })
+    } else {
+      result = await ProfileModel.find({}).lean();
+    }
+    return result;
   }
 
   async findOneById(id: string): Promise<Profile> {

@@ -1,15 +1,14 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import { Post } from '../entities/post.entity';
+import { CommentSchema } from './comment.model';
 
-dotenv.config()
-
-const postSchema = new mongoose.Schema({
+const PostSchema = new mongoose.Schema({
   description: String,
+  comments: { type: [CommentSchema], default: [] },
   profileId: mongoose.Schema.Types.ObjectId,
   imgUrl: String,
-  createdAt: Date,
-  modifiedAt: Date,
+  createdAt: { type: Date, default: Date.now() },
+  modifiedAt: { type: Date, default: Date.now() },
 });
 
-export const PostModel = mongoose.model<Post>('Post', postSchema);
+export const PostModel = mongoose.model<Post>('Post', PostSchema);
