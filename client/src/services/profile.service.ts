@@ -1,12 +1,26 @@
 import { ProfileDto } from "../dtos/profile.dto";
 import { AuthHelper } from "./auth-helper";
-const { REACT_APP_FIG_BASE_API } = process.env;
 
 class ProfileService {
+  private baseUri: string;
+
+  constructor() {
+    this.baseUri = 'http://localhost:3000/api/v1/profile'
+  }
+
+  async getMe(): Promise<ProfileDto> {
+    const token = await AuthHelper.getToken();
+    const options = { headers: { authorization: `Bearer ${token}` } };
+    const url = new URL(`${this.baseUri}/me`);
+    const response = await fetch(url.toString(), options);
+    const result: ProfileDto = await response.json();
+    return result;
+  }
+
   async getProfileById(_id: string): Promise<ProfileDto> {
     const token = await AuthHelper.getToken();
     const options = { headers: { authorization: `Bearer ${token}` } };
-    const url = new URL(`${REACT_APP_FIG_BASE_API}/profile/q`);
+    const url = new URL(`${this.baseUri}/q`);
     url.searchParams.append('_id', _id);
     const response = await fetch(url.toString(), options);
     const result: ProfileDto = await response.json();
@@ -16,7 +30,7 @@ class ProfileService {
   async getProfileByUsername(username: string): Promise<ProfileDto> {
     const token = await AuthHelper.getToken();
     const options = { headers: { authorization: `Bearer ${token}` } };
-    const url = new URL(`${REACT_APP_FIG_BASE_API}/profile/${username}`);
+    const url = new URL(`${this.baseUri}/${username}`);
     const response = await fetch(url.toString(), options);
     const result: ProfileDto = await response.json();
     return result;

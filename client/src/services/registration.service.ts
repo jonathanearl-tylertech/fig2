@@ -1,7 +1,7 @@
 import { ProfileDto } from "../dtos/profile.dto";
 
 class RegistrationService {
-  baseUrl = 'http://localhost:5000/registration'
+  baseUrl = 'http://localhost:3000/api/v1/registration'
   digitRegex = /\d/;
   specialCharacterRegex = /[!@#$%^&*]/;
   lowerCaseRegex = /(?=.*[a-z])/;
