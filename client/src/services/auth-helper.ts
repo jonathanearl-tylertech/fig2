@@ -2,8 +2,6 @@ import crypto from 'crypto';
 
 // okta specific due to special implicit flow
 class AuthenticationHelper {
-  private state: string = '';
-  private nonce: string = '';
   private accessToken: string = '';
   private idToken: string = '';
   private iframe: HTMLIFrameElement;
@@ -11,7 +9,8 @@ class AuthenticationHelper {
 
   constructor() {
     this.iframe = this.getIframe();
-    this.oktaOrgUrl = process.env.REACT_APP_OKTA_ORG_URL as string;
+    // todo: pull this from api? pass through?
+    this.oktaOrgUrl = "https://dev-840204.okta.com/";
   }
 
   private getIframe() {

@@ -7,6 +7,7 @@ import { AuthHelper } from '../services/auth-helper';
 import { closeLogin, openLogin } from '../feature/loginSlice';
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux';
 import { endUserSession, SessionState, startUserSession } from '../feature/sessionslice';
+import profileService from '../services/profile.service';
 
 Modal.setAppElement('#root');
 
@@ -62,13 +63,7 @@ export const Login = () => {
       }
       await fetchProfile();
     }
-    const token = await AuthHelper.getToken();
-    if (!token)
-      return;
-    const { REACT_APP_FIG_BASE_API } = process.env;
-    const options = { headers: { authorization: `Bearer ${token}` } };
-    const response = await fetch(`${REACT_APP_FIG_BASE_API}/profile/me`, options);
-    const userinfo = await response.json();
+    const userinfo = await profileService.getMe();
     dispatch(startUserSession(userinfo));
   }
 

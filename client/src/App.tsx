@@ -12,6 +12,7 @@ import Registration from './components/Registration';
 import { Profile } from './pages/Profile';
 import { Explore } from './pages/Explore';
 import { Post } from './pages/Post';
+import profileService from './services/profile.service';
 
 const theme = createTheme({
   palette: {
@@ -35,10 +36,7 @@ function App() {
         return;
       }
 
-      const { REACT_APP_FIG_BASE_API } = process.env;
-      const options = { headers: { authorization: `Bearer ${token}` } };
-      const response = await fetch(`${REACT_APP_FIG_BASE_API}/profile/me`, options);
-      const userinfo = await response.json();
+      const userinfo = await profileService.getMe();
       dispatch(startUserSession(userinfo));
     }
 
