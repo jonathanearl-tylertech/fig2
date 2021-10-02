@@ -70,7 +70,6 @@ export class PostController {
   @Post(':id/comment')
   async createComment(@Param('id') id: string, @Body() createPostDto: CreateCommentDto, @UserInfo() userInfo) {
     const profile = await this.profileService.findOneByUid(userInfo.uid);
-    console.log(profile);
     const comment = { ...createPostDto, profileId: profile._id};
     await this.postService.addComment(id, comment)
   }
