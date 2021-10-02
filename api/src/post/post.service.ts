@@ -6,7 +6,6 @@ import { PostModel } from './db/post.model';
 import { CommentModel } from './db/comment.model';
 import { Comment } from './entities/comment.entity';
 import { ApiOperation } from '@nestjs/swagger';
-import { ProfileModel } from 'src/profile/db/profile.model';
 
 @Injectable()
 export class PostService {
@@ -46,7 +45,7 @@ export class PostService {
   @ApiOperation({ summary: 'add comment to post by id' })
   async addComment(id: string, newComment: Partial<Comment>) {
     const post = await PostModel.findById(id);
-    const comment = new CommentModel(newComment)
+    const comment = new CommentModel(newComment);
     post.comments.push(comment);
     await post.save();
     return post;
