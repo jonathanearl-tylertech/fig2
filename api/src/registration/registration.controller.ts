@@ -1,46 +1,43 @@
-import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthService } from 'src/services/auth/auth.service';
-import { ProfileService } from 'src/services/profile/profile.service';
-import { RegistrationDto } from './dto/registration.dto';
+import { BadRequestException, Body, Controller, Get, NotImplementedException, Param, Post } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RegisterUserDto } from 'src/registration/dto/register-user.dto';
 import { ValidateEmailDto } from 'src/registration/dto/validate-email.dto';
 import { ValidateUsernameDto } from 'src/registration/dto/validate-username.dto';
+import { RegistrationService } from './registration.service';
 
 @ApiTags('registration')
 @Controller('registration')
 export class RegistrationController {
   constructor(
-    private readonly profileService: ProfileService,
-    private readonly authService: AuthService,
+    private readonly registrationSvc: RegistrationService,
   ) { }
 
   @ApiOperation({ summary: 'registers a new user' })
-  @ApiResponse({ status: 201 })
+  @ApiNoContentResponse()
   @ApiBadRequestResponse()
   @Post('')
-  async RegisterUser(@Body() dto: RegistrationDto) {
-    const { username, password, email } = dto;
-    this.authService.register(username, password, email);
+  async RegisterUser(@Body() dto: RegisterUserDto) {
+    const { email, username, password } = dto;
+    if (await this.registrationSvc.isEmailInUse(email))
+      throw new BadRequestException(`email '${email}' already taken`);
+    
+    if (await this.registrationSvc.isUsernameInUse(username))
+      throw new BadRequestException(`username '${username}' already taken`);
+
+    this.registrationSvc.registerUser(email, username, password);
   }
 
   @ApiOperation({ summary: 'validate username is available' })
-  @ApiOkResponse({ description: 'returns ok if username is valid and unused' })
-  @ApiBadRequestResponse({ type: [String], description: 'returns list of issues with the username' })
+  @ApiOkResponse({ type: Boolean, description: 'returns ok if username is valid and unused' })
   @Get('validateUsername/:username')
   async validateUserName(@Param() dto: ValidateUsernameDto) {
-    const { username } = dto;
-    let profile = await this.profileService.findOneByUsername(username);
-    if (profile) {
-      throw new BadRequestException(['username is already in use'])
-    }
+    return this.registrationSvc.isUsernameInUse(dto.username)
   }
 
   @ApiOperation({ summary: 'validate email is available' })
-  @ApiOkResponse({
-    description: 'returns error message',
-    type: String, 
-  })
+  @ApiOkResponse({ type: Boolean, description: 'true if email is valid' })
   @Get('validateEmail/:email')
   async validateEmail(@Param() dto: ValidateEmailDto) {
+    return this.registrationSvc.isEmailInUse(dto.email)
   }
 }
