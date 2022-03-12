@@ -1,22 +1,18 @@
-import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, Post, BadRequestException, Query } from '@nestjs/common';
-import { ProfileService } from 'src/profile/profile.service';
-import { UpdateProfileDto } from './dto/update-profile.dto';
+import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { ProfileService } from 'src/services/profile/profile.service';
+import { UpdateProfileRequest } from './dto/update-profile-request';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Profile } from './entities/profile.entity';
-import { CreateProfileDto } from './dto/create-profile.dto';
+import { Profile } from '../services/profile/profile.model';
 import { UserInfo } from 'src/decorators/user-info.decorator';
-import { Groups } from 'src/decorators/groups.decorator';
-import { Group } from 'src/guards/group.enum';
 
 @ApiTags('profile')
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Groups(Group.User)
   @ApiOperation({ summary: 'get own profile'})
   @ApiOkResponse({ description: 'the found profile', type: Profile })
-  @Get('me')
+  @Get('')
   async findMe(@UserInfo() user) {
     const { uid } = user;
     let profile = await this.profileService.findOneByUid(uid);
@@ -24,9 +20,6 @@ export class ProfileController {
       var currentDate = new Date();
       var ms = currentDate.getTime();
       profile = await this.profileService.create({ 
-        issuers: { 
-          default: uid
-        },
         username: `who_am_i_${ms}`, 
         modifiedAt: currentDate, 
         createdAt: currentDate
@@ -35,35 +28,22 @@ export class ProfileController {
     return profile;
   }
 
-  @ApiOperation({ summary: 'query profile'})
-  @ApiOkResponse({ description: 'the found profile', type: Profile })
-  @Get('q')
-  async query(@Query() q) {
-    const { _id } = q;
-
-    if (_id) {
-      return await this.profileService.findOneById(_id);
-    }
-
-    return new BadRequestException('_id required');
-  }
-
   @ApiOperation({ summary: 'update profile by username' })
   @ApiOkResponse({ description: 'the updated profile', type: Profile })
-  @Patch('me')
-  async update(@UserInfo() user, @Body() updateProfileDto: UpdateProfileDto) {
+  @Patch('')
+  async update(@UserInfo() user, @Body() updateProfileDto: UpdateProfileRequest) {
+    throw new NotImplementedException();
     const profile = await this.profileService.findOneByUid(user.uid);
     profile.summary = updateProfileDto.summary;
     const result = await this.profileService.update(profile);
     return result;
   }
 
-  @ApiOperation({ summary: 'find all profiles' })
-  @ApiOkResponse({ description: 'The found profiles', type: [Profile] })
-  @Get()
-  async findAll(): Promise<Profile[]> {
-    var profiles = await this.profileService.findAll();
-    return profiles;
+  @ApiOperation({ summary: 'delete profile by username' })
+  @ApiOkResponse({ description: 'the updated profile' })
+  @Delete('')
+  async remove() {
+    throw new NotImplementedException();
   }
 
   @ApiOperation({ summary: 'find profile by username' })
@@ -77,35 +57,4 @@ export class ProfileController {
     return profile;
   }
 
-  @ApiOperation({ summary: 'update profile by username' })
-  @ApiOkResponse({ description: 'the updated profile', type: Profile })
-  @Patch()
-  async updateProfile(@Body() updateProfileDto: UpdateProfileDto) {
-    let profile = await this.profileService.findOneById(updateProfileDto.id);
-    profile = {...profile, ...updateProfileDto}
-    return await this.profileService.update(profile);
-  }
-
-  @ApiOperation({ summary: 'delete profile by username' })
-  @ApiOkResponse({ description: 'the updated profile' })
-  @Delete(':username')
-  async remove(@Param('username') username: string) {
-    await this.profileService.remove(username)
-    return;
-  }
-
-  @ApiOperation({ summary: 'add profile profile' })
-  @ApiOkResponse({ description: 'the new profile', type: Profile })
-  @Post()
-  async create(@Body() newProfile: CreateProfileDto) {
-    const { username } = newProfile;
-
-    let profile = await this.profileService.findOneByUsername(username);
-    if (profile) {
-      throw new BadRequestException('username already taken');
-    }
-
-    profile = await this.profileService.create({...newProfile});
-    return profile;
-  }
 }

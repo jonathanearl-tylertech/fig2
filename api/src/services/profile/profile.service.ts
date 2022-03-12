@@ -1,6 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Profile } from './entities/profile.entity';
-import { ProfileModel } from './db/profile.model';
+import { Profile } from './profile.model';
+import { ProfileModel } from './profile.model';
 
 @Injectable()
 export class ProfileService {

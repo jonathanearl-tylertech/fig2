@@ -1,5 +1,5 @@
 import { PostModel } from 'src/post/db/post.model';
-import { ProfileModel } from 'src/profile/db/profile.model';
+import { ProfileModel } from 'src/services/profile/profile.model';
 import { ProfileSeedData } from './data/profiles';
 import { PostSeedData } from './data/posts';
 

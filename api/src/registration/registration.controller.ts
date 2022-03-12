@@ -2,9 +2,9 @@ import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs
 import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'src/services/auth/auth.service';
 import { ProfileService } from 'src/services/profile/profile.service';
-import { RegistrationDto } from './requests/registration.dto';
-import { ValidateEmailDto } from 'src/registration/requests/validate-email.dto';
-import { ValidateUsernameDto } from 'src/registration/requests/validate-username.dto';
+import { RegistrationDto } from './dto/registration.dto';
+import { ValidateEmailDto } from 'src/registration/dto/validate-email.dto';
+import { ValidateUsernameDto } from 'src/registration/dto/validate-username.dto';
 
 @ApiTags('registration')
 @Controller('registration')

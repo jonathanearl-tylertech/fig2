@@ -8,7 +8,7 @@ import { UserInfo } from 'src/decorators/user-info.decorator';
 import { Groups } from 'src/decorators/groups.decorator';
 import { Group } from 'src/guards/group.enum';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ProfileService } from 'src/profile/profile.service';
+import { ProfileService } from 'src/services/profile/profile.service';
 
 @ApiTags('post')
 @Controller('post')
