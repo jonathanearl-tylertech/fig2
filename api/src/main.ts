@@ -2,20 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import dotenv from 'dotenv';
-import redis from 'redis';
-import session from 'express-session';
-import connectRedis from 'connect-redis';
 import { ValidationPipe } from '@nestjs/common';
-import { Db } from 'src/db/db-context';
+import { MongooseClient } from 'src/mongoose/mongoose-client';
 
-let RedisStore = connectRedis(session);
-let redisClient = redis.createClient();
 dotenv.config();
 
-const { WEBAPI_PORT, REDIS_SECRET } = process.env;
-
 async function bootstrap() {
-  await Db.connect();
+  const options = { 
+    connectionString: process.env.MONGO_CONNECTIONSTRING,
+    username: process.env.MONGO_USERNAME,
+    password: process.env.MONGO_PASSWORD,
+  };
+  await MongooseClient.connect(options);
   const app = await NestFactory.create(AppModule);
   
   app.setGlobalPrefix('api/v1');
@@ -24,24 +22,16 @@ async function bootstrap() {
 
   app.enableCors();
 
-  app.use(
-    session({
-      store: new RedisStore({ client: redisClient }),
-      secret: REDIS_SECRET,
-      saveUninitialized: false,
-      resave: false,
-    }),
-  );
-
   const config = new DocumentBuilder()
     .setTitle('FIG api')
     .setDescription('An api for FIG client')
     .setVersion('1.0')
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
+    .addCookieAuth('uid')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
-  await app.listen(WEBAPI_PORT ? WEBAPI_PORT : 5000);
+  await app.listen(process.env.PORT ?? 5000);
 }
 bootstrap();
