@@ -1,22 +1,21 @@
 import mongoose from 'mongoose';
 
 class MongooseContext {
-  async connect(options: {connectionString: string, username: string, password: string}) {
+  async connect(config: {connectionString: string, username: string, password: string}) {
+    const options = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      authSource: "admin",
+      auth: {
+        user: config.username,
+        password: config.password
+      }
+    };
     try {
-      await mongoose.connect(
-        options.connectionString ?? 'mongodb://localhost:27017/fig',
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          authSource: "admin",
-          auth: {
-            user: options.username ?? 'admin',
-            password: options.password ?? 'admin'
-          }
-        }
-      );
+      await mongoose.connect(config.connectionString, options);
     } catch(err) {
-      console.error('could not connect to db:', options.connectionString, err);
+      console.error('could not connect to db:', config.connectionString, err);
+      process.exit(1);
     }
   }
 }
