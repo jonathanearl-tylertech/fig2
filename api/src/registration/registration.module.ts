@@ -6,10 +6,7 @@ import { RegistrationService } from './registration.service';
 
 @Module({
   imports: [ProfileModule],
-  providers: [
-    RegistrationService,
-    UserService
-  ],
-  controllers: [RegistrationController]
+  providers: [RegistrationService, UserService],
+  controllers: [RegistrationController],
 })
 export class RegistrationModule {}

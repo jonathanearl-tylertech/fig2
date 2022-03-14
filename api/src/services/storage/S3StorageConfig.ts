@@ -1,4 +1,4 @@
-import { registerAs } from "@nestjs/config";
+import { registerAs } from '@nestjs/config';
 
 export const S3StorageConfig = registerAs('S3Storage', () => ({
   accessKeyId: process.env.S3_ACCESS_KEY_ID,

@@ -1,16 +1,16 @@
-import { Controller, Get, Body, Patch, Param, Delete, NotFoundException, NotImplementedException } from '@nestjs/common';
-import { ProfileService } from 'src/profile/profile.service';
-// import { UpdateProfileRequest } from './dto/update-profile-request';
+import {
+  Controller,
+  Get,
+  Patch,
+  Delete,
+  NotImplementedException,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-// import { Profile } from '../services/profile/profile.model';
-// import { UserInfo } from 'src/decorators/user-info.decorator';
 
 @ApiTags('profile')
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
-
-  @ApiOperation({ summary: 'get own profile'})
+  @ApiOperation({ summary: 'get own profile' })
   @ApiOkResponse({ description: 'the found profile', type: null })
   @Get('')
   async GetSelf() {
@@ -34,7 +34,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'find profile by username' })
   @ApiOkResponse({ description: 'the found profile', type: null })
   @Get(':username')
-  async GetProfile(@Param('username') username: string) {
+  async GetProfile() {
+    throw new NotImplementedException();
   }
-
 }

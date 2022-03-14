@@ -1,12 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePostDto {
-  @ApiProperty({type: String})
+  @ApiProperty({ type: String })
   username: string;
-  
-  @ApiProperty({type: String})
+
+  @ApiProperty({ type: String })
   description: string;
-  
-  @ApiProperty({type: String})
+
+  @ApiProperty({ type: String })
   imgUrl: string;
 }

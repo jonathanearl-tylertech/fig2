@@ -7,6 +7,6 @@ import { ProfileModule } from 'src/profile/profile.module';
 @Module({
   imports: [StorageModule, ProfileModule],
   controllers: [PostController],
-  providers: [PostService]
+  providers: [PostService],
 })
 export class PostModule {}

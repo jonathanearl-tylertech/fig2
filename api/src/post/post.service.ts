@@ -1,8 +1,7 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
-import { PostModel } from './db/post.model'; 
+import { PostModel } from './db/post.model';
 import { CommentModel } from './db/comment.model';
 import { Comment } from './entities/comment.entity';
 import { ApiOperation } from '@nestjs/swagger';
@@ -13,7 +12,7 @@ export class PostService {
     const post: Partial<Post> = {
       ...createPostDto,
       createdAt: new Date(),
-    } 
+    };
     const result = new PostModel(post);
     await result.save();
     return result.toObject();
@@ -29,7 +28,7 @@ export class PostService {
     return post;
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
+  async update(id: string) {
     throw new NotImplementedException(`This action updates a #${id} post`);
   }
 

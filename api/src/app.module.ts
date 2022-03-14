@@ -5,13 +5,7 @@ import { ProfileModule } from './profile/profile.module';
 import { RegistrationModule } from './registration/registration.module';
 
 @Module({
-  providers: [
-  ],
-  imports: [
-    AuthModule,
-    PostModule,
-    ProfileModule,
-    RegistrationModule,
-  ],
+  providers: [],
+  imports: [AuthModule, PostModule, ProfileModule, RegistrationModule],
 })
 export class AppModule {}

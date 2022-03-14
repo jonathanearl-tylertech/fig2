@@ -1,19 +1,23 @@
 import mongoose from 'mongoose';
 
 class MongooseContext {
-  async connect(config: {connectionString: string, username: string, password: string}) {
+  async connect(config: {
+    connectionString: string;
+    username: string;
+    password: string;
+  }) {
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      authSource: "admin",
+      authSource: 'admin',
       auth: {
         user: config.username,
-        password: config.password
-      }
+        password: config.password,
+      },
     };
     try {
       await mongoose.connect(config.connectionString, options);
-    } catch(err) {
+    } catch (err) {
       console.error('could not connect to db:', config.connectionString, err);
       process.exit(1);
     }

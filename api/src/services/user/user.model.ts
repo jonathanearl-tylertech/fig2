@@ -4,7 +4,7 @@ export class FigUser {
   _id: string;
   __v: number;
   disabled: boolean;
-  email: string
+  email: string;
   failedLoginAttempts: number;
   image: string;
   lastLogin: Date;
