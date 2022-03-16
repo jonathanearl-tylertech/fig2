@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { FigUser, FigUserModel as UserModel } from './user.model';
+import { UserContext, UserModel } from './models/user.model';
 import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  async create(newUser: Partial<FigUser>) {
-    const user = new UserModel({
+  async create(newUser: Partial<UserModel>) {
+    const user = new UserContext({
       ...newUser,
       failedLoginAttempts: 0,
       disabled: false,
@@ -16,10 +16,9 @@ export class UserService {
   }
 
   async validatePassword(username: string, password: string): Promise<boolean> {
-    const user = await UserModel.findOne({ username: username });
-    console.log(user);
+    const user = await UserContext.findOne({ username: username });
+    if (!user) return false;
     const isAuthorized = await bcrypt.compare(password, user.passwordHash);
-    console.log({ isAuthorized });
     if (!isAuthorized) {
       user.failedLoginAttempts += 1;
       user.save();
@@ -30,16 +29,16 @@ export class UserService {
     return true;
   }
 
-  async findByUsername(username: string): Promise<FigUser> {
-    return await UserModel.findOne({ username: username }).lean();
+  async findByUsername(username: string): Promise<UserModel> {
+    return await UserContext.findOne({ username: username }).lean();
   }
 
-  async findByEmail(email: string): Promise<FigUser> {
-    return await UserModel.findOne({ email: email }).lean();
+  async findByEmail(email: string): Promise<UserModel> {
+    return await UserContext.findOne({ email: email }).lean();
   }
 
-  async update(user: FigUser): Promise<FigUser> {
+  async update(user: UserModel): Promise<UserModel> {
     user.modifiedAt = new Date();
-    return await UserModel.findOneAndUpdate(user);
+    return await UserContext.findOneAndUpdate(user);
   }
 }

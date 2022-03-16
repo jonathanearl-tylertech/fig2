@@ -15,10 +15,9 @@ import {
   ApiNotFoundResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Request } from 'express';
-import { UserService } from 'src/services/user/user.service';
+import { Request, Response } from 'express';
+import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dtos/login.dto';
-import { Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')

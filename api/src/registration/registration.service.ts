@@ -1,14 +1,11 @@
 import { Dependencies, Injectable } from '@nestjs/common';
 import bcrypt from 'bcrypt';
-import { UserService } from 'src/services/user/user.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 @Dependencies(UserService)
 export class RegistrationService {
-  userSvc: UserService;
-  constructor() {
-    this.userSvc = new UserService();
-  }
+  constructor(private userSvc: UserService) {}
 
   async registerUser(email, username, password) {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -20,10 +17,10 @@ export class RegistrationService {
   }
 
   async isEmailInUse(email: string): Promise<boolean> {
-    return (await this.userSvc.findByEmail(email)) === null;
+    return (await this.userSvc.findByEmail(email)) !== null;
   }
 
   async isUsernameInUse(username: string): Promise<boolean> {
-    return (await this.userSvc.findByUsername(username)) === null;
+    return (await this.userSvc.findByUsername(username)) !== null;
   }
 }

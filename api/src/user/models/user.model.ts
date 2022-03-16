@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export class FigUser {
+export class UserModel {
   _id: string;
   __v: number;
   disabled: boolean;
@@ -14,7 +14,7 @@ export class FigUser {
   username: string;
 }
 
-const figUserSchema = new mongoose.Schema({
+const UserModelSchema = new mongoose.Schema({
   disabled: Boolean,
   email: String,
   failedLoginAttempts: Number,
@@ -26,4 +26,4 @@ const figUserSchema = new mongoose.Schema({
   username: String,
 });
 
-export const FigUserModel = mongoose.model<FigUser>('FigUser', figUserSchema);
+export const UserContext = mongoose.model<UserModel>('User', UserModelSchema);
