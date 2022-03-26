@@ -11,7 +11,7 @@ class MongooseContext {
       useUnifiedTopology: true,
       authSource: 'admin',
       auth: {
-        user: config.username,
+        username: config.username,
         password: config.password,
       },
     };
