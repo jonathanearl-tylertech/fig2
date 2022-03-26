@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from 'src/user/user.module';
+import { IdentityModule } from 'src/identity/identity.module';
 import { RegistrationController } from './registration.controller';
 import { RegistrationService } from './registration.service';
 
 @Module({
-  imports: [UserModule],
+  imports: [IdentityModule],
   providers: [RegistrationService],
   controllers: [RegistrationController],
 })

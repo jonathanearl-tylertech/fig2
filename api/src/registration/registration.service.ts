@@ -1,26 +1,26 @@
-import { Dependencies, Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import bcrypt from 'bcrypt';
-import { UserService } from 'src/user/user.service';
+import { IdentityService } from 'src/identity/identity.service';
+
 
 @Injectable()
-@Dependencies(UserService)
 export class RegistrationService {
-  constructor(private userSvc: UserService) {}
+  constructor(private idSvc: IdentityService) {}
 
-  async registerUser(email, username, password) {
-    const passwordHash = await bcrypt.hash(password, 10);
-    await this.userSvc.create({
-      username,
-      passwordHash,
+  async registerUser(email: string, password) {
+    const hash = await bcrypt.hash(password, 10);
+    await this.idSvc.create({
+      password: hash,
       email,
     });
   }
 
   async isEmailInUse(email: string): Promise<boolean> {
-    return (await this.userSvc.findByEmail(email)) !== null;
+    return (await this.idSvc.findByEmail(email)) !== null;
   }
 
   async isUsernameInUse(username: string): Promise<boolean> {
-    return (await this.userSvc.findByUsername(username)) !== null;
+    throw new NotImplementedException();
+    // return (await this.userSvc.findByUsername(username)) !== null;
   }
 }

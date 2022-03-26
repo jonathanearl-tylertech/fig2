@@ -28,14 +28,11 @@ export class RegistrationController {
   @ApiBadRequestResponse()
   @Post('')
   async RegisterUser(@Body() dto: RegisterUserDto) {
-    const { email, username, password } = dto;
+    const { email, password } = dto;
     if (await this.registrationSvc.isEmailInUse(email))
       throw new BadRequestException(`email '${email}' already taken`);
 
-    if (await this.registrationSvc.isUsernameInUse(username))
-      throw new BadRequestException(`username '${username}' already taken`);
-
-    this.registrationSvc.registerUser(email, username, password);
+    this.registrationSvc.registerUser(email, password);
   }
 
   @ApiOperation({ summary: 'validate username is available' })
