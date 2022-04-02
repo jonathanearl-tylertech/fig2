@@ -7,7 +7,6 @@ import { UserModule } from './user/user.module';
 import { IdentityModule } from './identity/identity.module';
 
 @Module({
-  providers: [],
   imports: [
     AuthModule,
     IdentityModule,

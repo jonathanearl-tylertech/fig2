@@ -1,44 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { UserContext, UserModel } from './models/user.model';
-import bcrypt from 'bcrypt';
+import { User, UserDocument } from './user.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  async create(newUser: Partial<UserModel>) {
-    const user = new UserContext({
-      ...newUser,
-      failedLoginAttempts: 0,
-      disabled: false,
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-    });
-    await user.save();
+  constructor(@InjectModel(User.name) private db: Model<UserDocument>) { }
+
+  create = async (user: Partial<User>) => {
+    return (await this.db.create(user)).id;
   }
 
-  async validatePassword(username: string, password: string): Promise<boolean> {
-    const user = await UserContext.findOne({ username: username });
-    if (!user) return false;
-    const isAuthorized = await bcrypt.compare(password, user.passwordHash);
-    if (!isAuthorized) {
-      user.failedLoginAttempts += 1;
-      user.save();
-      return false;
-    }
-    user.lastLogin = new Date();
-    user.failedLoginAttempts = 0;
-    return true;
+  findAll = async () => {
+    return await this.db.find().lean();
   }
 
-  async findByUsername(username: string): Promise<UserModel> {
-    return await UserContext.findOne({ username: username }).lean();
+  findById = async (id: string) => {
+    return await this.db.findById(id).lean();
   }
 
-  async findByEmail(email: string): Promise<UserModel> {
-    return await UserContext.findOne({ email: email }).lean();
+  findByEmail = async (email: string) => {
+    return await this.db.findOne({ email }).lean();
   }
 
-  async update(user: UserModel): Promise<UserModel> {
-    user.modifiedAt = new Date();
-    return await UserContext.findOneAndUpdate(user);
+  update = async (id: string, user: User) => {
+    return (await this.db.findOneAndUpdate({ id }, user)).id;
+  };
+
+  remove = async (id: string) => {
+    await this.db.findByIdAndRemove(id);
   }
 }
