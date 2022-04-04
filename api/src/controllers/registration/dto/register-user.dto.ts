@@ -11,4 +11,9 @@ export class RegisterUserDto {
   @MinLength(16)
   @ApiProperty({ type: String })
   password: string;
+
+  @IsNotEmpty()
+  @MinLength(3)
+  @ApiProperty({ type: String })
+  username: string;
 }

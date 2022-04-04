@@ -1,17 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Identity, IdentityDocument } from './identity.schema';
-import bcrypt from 'bcrypt';
+import { Identity, IdentityDocument, IdentityType } from './identity.schema';
+import { PasswordService } from 'src/services/password.service';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class IdentityService {
   
-  constructor(@InjectModel(Identity.name) private db: Model<IdentityDocument>) {}
+  constructor(
+    @InjectModel(Identity.name) private db: Model<IdentityDocument>,
+    private readonly passwordService: PasswordService,
+  ) {}
 
-  create = async (doc: Partial<Identity>) => {
-    const result = await this.db.create(doc);
-    return result.id;
+  create = async (email: string, password: string) => {
+    const hash = await this.passwordService.hash(password);
+    const result = await this.db.create({
+      _id: new mongoose.mongo.ObjectId(),
+      email,
+      password: hash,
+      type: IdentityType.Local,
+    });
+    console.log({result})
+    return result.toObject();
   };
 
   findAll = async () => {
