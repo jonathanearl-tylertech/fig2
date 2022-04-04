@@ -23,14 +23,12 @@ import { StartSessionDto } from './dtos/start-session.dto';
 @ApiTags('session')
 @Controller('session')
 export class SessionController {
-  private readonly THIRTY_DAYS: number;
+  private readonly THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
 
   constructor(
     private readonly idSvc: IdentityService,
     private readonly pwSvc: PasswordService,
-  ) {
-    this.THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
-  }
+  ) { }
 
   @ApiCreatedResponse({ description: 'session created' })
   @ApiBadRequestResponse({ description: 'invalid username or password' })

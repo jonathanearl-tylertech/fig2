@@ -37,7 +37,7 @@ export class IdentityService {
     return await this.db.findOne({ email }).lean();
   }
 
-  update = async (id: string, doc: Identity) => {
+  update = async (id: string, doc: Partial<Identity>) => {
     const result = await this.db.findOneAndUpdate({ id }, doc).lean();
     return result.id;
   }

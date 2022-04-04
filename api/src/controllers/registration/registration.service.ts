@@ -12,8 +12,7 @@ export class RegistrationService {
   async registerUser(email: string, password: string, username: string) {
     const identity = await this.idSvc.create(email, password);
     const user = await this.userSvc.create(username);
-    identity.userId = user._id;
-    await this.idSvc.update(identity.id, identity);
+    await this.idSvc.update(identity.id, { userId: user._id });
   }
 
   async isEmailInUse(email: string) {
