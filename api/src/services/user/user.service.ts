@@ -9,35 +9,35 @@ import { EmojiGeneratorService } from 'src/services/emoji-generator.service';
 export class UserService {
   constructor(
     private readonly emoji: EmojiGeneratorService,
-    @InjectModel(User.name) private userDb: Model<UserDocument>
+    @InjectModel(User.name) private user: Model<UserDocument>
   ) { }
 
   create = async (username: string) => {
-    const user = await this.userDb.create({
+    const user = await this.user.create({
       _id: new mongoose.mongo.ObjectId(),
-      icon: this.emoji.generate(),  
+      icon: this.emoji.generate(),
       username,
     });
     return user.toObject();
   }
 
   findAll = async () => {
-    return await this.userDb.find().lean();
+    return await this.user.find().lean();
   }
 
   findById = async (id: string) => {
-    return await this.userDb.findById(id).lean();
+    return await this.user.findById(id).lean();
   }
 
   findByUsername = async (username: string) => {
-    return await this.userDb.findOne({ username }).lean();
+    return await this.user.findOne({ username }).lean();
   }
 
-  update = async (id: string, user: User) => {
-    await this.userDb.findOneAndUpdate({ id }, user);
+  update = async (id: string, user: Partial<User>) => {
+    await this.user.findOneAndUpdate({ id }, user);
   };
 
   remove = async (id: string) => {
-    await this.userDb.findByIdAndRemove(id);
+    await this.user.findByIdAndRemove(id);
   }
 }
