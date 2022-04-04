@@ -3,7 +3,6 @@ import { IdentityModule } from 'src/services/identity/identity.module';
 import { PasswordService } from 'src/services/password.service';
 import { UserModule } from 'src/services/user/user.module';
 import { RegistrationController } from './registration.controller';
-import { RegistrationService } from './registration.service';
 
 @Module({
   imports: [
@@ -12,9 +11,7 @@ import { RegistrationService } from './registration.service';
   ],
   providers: [
     PasswordService,
-    RegistrationService
   ],
-  controllers: [RegistrationController],
-  exports: [RegistrationService]
+  controllers: [RegistrationController]
 })
 export class RegistrationModule {}

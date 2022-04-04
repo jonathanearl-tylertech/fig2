@@ -16,13 +16,15 @@ import {
 import { RegisterUserDto } from 'src/controllers/registration/dto/register-user.dto';
 import { ValidateEmailDto } from 'src/controllers/registration/dto/validate-email.dto';
 import { ValidateUsernameDto } from 'src/controllers/registration/dto/validate-username.dto';
-import { RegistrationService } from './registration.service';
+import { IdentityService } from 'src/services/identity/identity.service';
+import { UserService } from 'src/services/user/user.service';
 
 @ApiTags('registration')
 @Controller('registration')
 export class RegistrationController {
   constructor(
-    private readonly registrationSvc: RegistrationService
+    private idSvc: IdentityService,
+    private userSvc: UserService,
   ) {}
 
   @ApiOperation({ summary: 'registers a new user' })
@@ -31,13 +33,18 @@ export class RegistrationController {
   @Post('')
   async RegisterUser(@Body() dto: RegisterUserDto) {
     const { email, password, username } = dto;
-    if (await this.registrationSvc.isEmailInUse(email))
+
+    const existingIdentity = this.idSvc.findByEmail(email);
+    if (existingIdentity)
       throw new BadRequestException(`email '${email}' already taken`);
 
-    if (await this.registrationSvc.isUsernameInUse(username))
+    const existingUser = await this.userSvc.findByUsername(username);
+    if (existingUser)
       throw new BadRequestException(`username '${username}' already taken`);
 
-    await this.registrationSvc.registerUser(email, password, username);
+    const identity = await this.idSvc.create(email, password);
+    const user = await this.userSvc.create(username);
+    await this.idSvc.update(identity.id, { userId: user._id });
   }
 
   @ApiOperation({ summary: 'validate username is available' })
@@ -45,15 +52,19 @@ export class RegistrationController {
     type: Boolean,
     description: 'returns ok if username is valid and unused',
   })
-  @Get('validateUsername/:username')
+  @Get('user/:username')
   async validateUserName(@Param() dto: ValidateUsernameDto) {
-    return await this.registrationSvc.isUsernameInUse(dto.username);
+    const { username } = dto;
+    const existingUser = await this.userSvc.findByUsername(username);
+    return existingUser == null;
   }
 
   @ApiOperation({ summary: 'validate email is available' })
   @ApiOkResponse({ type: Boolean, description: 'true if email is valid' })
-  @Get('validateEmail/:email')
+  @Get('identity/:email')
   async validateEmail(@Param() dto: ValidateEmailDto) {
-    return await this.registrationSvc.isEmailInUse(dto.email);
+    const { email } = dto;
+    const existingIdentity = await this.idSvc.findByEmail(email);
+    return existingIdentity == null;
   }
 }
