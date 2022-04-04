@@ -16,30 +16,38 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { UserService } from 'src/user/user.service';
-import { LoginDto } from './dtos/login.dto';
+import { IdentityService } from 'src/services/identity/identity.service';
+import { PasswordService } from 'src/services/password.service';
+import { StartSessionDto } from './dtos/start-session.dto';
 
-@ApiTags('auth')
-@Controller('auth')
-export class AuthController {
+@ApiTags('session')
+@Controller('session')
+export class SessionController {
   private readonly THIRTY_DAYS: number;
 
-  constructor(private readonly userSvc: UserService) {
+  constructor(
+    private readonly idSvc: IdentityService,
+    private readonly pwSvc: PasswordService,
+  ) {
     this.THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
   }
 
   @ApiCreatedResponse({ description: 'session created' })
   @ApiBadRequestResponse({ description: 'invalid username or password' })
-  @Post('session')
-  async startSession(@Res() res: Response, @Body() dto: LoginDto) {
-    const { username, password } = dto;
-    const isAuthorized = await this.userSvc.validatePassword(
-      username,
-      password,
-    );
+  @Post('')
+  async startSession(@Res() res: Response, @Body() dto: StartSessionDto) {
+    const { email, password } = dto;
+    const identity = await this.idSvc.findByEmail(email);
+    if (!identity)
+      throw new UnauthorizedException();
+
+    const isAuthorized = await this.pwSvc.compare(password, identity.password);
     if (!isAuthorized)
-      throw new UnauthorizedException('username or password is invalid');
-    res.cookie('uid', username, {
+      throw new UnauthorizedException();
+
+    console.log(identity);
+
+    res.cookie('uid', identity.userId, {
       maxAge: this.THIRTY_DAYS,
       httpOnly: true,
       signed: true,
@@ -49,7 +57,7 @@ export class AuthController {
 
   @ApiNoContentResponse({ description: 'session deleted' })
   @ApiNotFoundResponse({ description: 'no session found' })
-  @Delete('session')
+  @Delete('')
   async endSession(@Req() req: Request, @Res() res: Response) {
     const { uid } = req.signedCookies;
     if (!uid) throw new NotFoundException('no session found');

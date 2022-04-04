@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
+import { SessionModule } from './controllers/session/session.module';
 import { PostModule } from './post/post.module';
 import { RegistrationModule } from './controllers/registration/registration.module';
 import { UserModule } from './services/user/user.module';
@@ -9,7 +9,7 @@ import { RegistrationController } from './controllers/registration/registration.
 
 @Module({
   imports: [
-    AuthModule,
+    SessionModule,
     IdentityModule,
     MongooseModule.forRoot('mongodb://localhost/fig'),
     PostModule, 
