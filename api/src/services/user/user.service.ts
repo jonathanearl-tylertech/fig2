@@ -3,14 +3,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
+import { EmojiGeneratorService } from 'src/services/emoji-generator.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userDb: Model<UserDocument>) { }
+  constructor(
+    private readonly emoji: EmojiGeneratorService,
+    @InjectModel(User.name) private userDb: Model<UserDocument>
+  ) { }
 
   create = async (username: string) => {
     const user = await this.userDb.create({
       _id: new mongoose.mongo.ObjectId(),
+      icon: this.emoji.generate(),  
       username,
     });
     return user.toObject();
