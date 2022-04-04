@@ -23,16 +23,16 @@ import { StartSessionDto } from './dtos/start-session.dto';
 @ApiTags('session')
 @Controller('session')
 export class SessionController {
-  private readonly THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
 
   constructor(
+    private readonly sessionLength = 1000 * 60 * 60 * 24 * 30,
     private readonly idSvc: IdentityService,
     private readonly pwSvc: PasswordService,
   ) { }
 
+  @Post('')
   @ApiCreatedResponse({ description: 'session created' })
   @ApiBadRequestResponse({ description: 'invalid username or password' })
-  @Post('')
   async startSession(@Res() res: Response, @Body() dto: StartSessionDto) {
     const { email, password } = dto;
     const identity = await this.idSvc.findByEmail(email);
@@ -43,19 +43,17 @@ export class SessionController {
     if (!isAuthorized)
       throw new UnauthorizedException();
 
-    console.log(identity);
-
     res.cookie('uid', identity.userId, {
-      maxAge: this.THIRTY_DAYS,
+      maxAge: this.sessionLength,
       httpOnly: true,
       signed: true,
     });
     res.sendStatus(201);
   }
 
+  @Delete('')
   @ApiNoContentResponse({ description: 'session deleted' })
   @ApiNotFoundResponse({ description: 'no session found' })
-  @Delete('')
   async endSession(@Req() req: Request, @Res() res: Response) {
     const { uid } = req.signedCookies;
     if (!uid) throw new NotFoundException('no session found');

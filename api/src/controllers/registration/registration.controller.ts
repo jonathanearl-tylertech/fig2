@@ -27,14 +27,14 @@ export class RegistrationController {
     private userSvc: UserService,
   ) {}
 
+  @Post('')
   @ApiOperation({ summary: 'registers a new user' })
   @ApiNoContentResponse()
   @ApiBadRequestResponse()
-  @Post('')
   async RegisterUser(@Body() dto: RegisterUserDto) {
     const { email, password, username } = dto;
 
-    const existingIdentity = this.idSvc.findByEmail(email);
+    const existingIdentity = await this.idSvc.findByEmail(email);
     if (existingIdentity)
       throw new BadRequestException(`email '${email}' already taken`);
 
@@ -47,21 +47,21 @@ export class RegistrationController {
     await this.idSvc.update(identity.id, { userId: user._id });
   }
 
+  @Get('user/:username')
   @ApiOperation({ summary: 'validate username is available' })
   @ApiOkResponse({
     type: Boolean,
     description: 'returns ok if username is valid and unused',
   })
-  @Get('user/:username')
   async validateUserName(@Param() dto: ValidateUsernameDto) {
     const { username } = dto;
     const existingUser = await this.userSvc.findByUsername(username);
     return existingUser == null;
   }
 
+  @Get('identity/:email')
   @ApiOperation({ summary: 'validate email is available' })
   @ApiOkResponse({ type: Boolean, description: 'true if email is valid' })
-  @Get('identity/:email')
   async validateEmail(@Param() dto: ValidateEmailDto) {
     const { email } = dto;
     const existingIdentity = await this.idSvc.findByEmail(email);
