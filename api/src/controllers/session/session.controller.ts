@@ -23,9 +23,9 @@ import { StartSessionDto } from './dtos/start-session.dto';
 @ApiTags('session')
 @Controller('session')
 export class SessionController {
+  private readonly SESSION_LENGTH = 1000 * 60 * 60 * 24 * 30;
 
   constructor(
-    private readonly sessionLength = 1000 * 60 * 60 * 24 * 30,
     private readonly idSvc: IdentityService,
     private readonly pwSvc: PasswordService,
   ) { }
@@ -44,7 +44,7 @@ export class SessionController {
       throw new UnauthorizedException();
 
     res.cookie('uid', identity.userId, {
-      maxAge: this.sessionLength,
+      maxAge: this.SESSION_LENGTH,
       httpOnly: true,
       signed: true,
     });
