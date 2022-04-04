@@ -5,6 +5,7 @@ import { PostModule } from './services/post/post.module';
 import { RegistrationModule } from './controllers/registration/registration.module';
 import { UserModule } from './services/user/user.module';
 import { IdentityModule } from './services/identity/identity.module';
+import { ProfileModule } from './controllers/profile/profile.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { IdentityModule } from './services/identity/identity.module';
     RegistrationModule,
     SessionModule,
     UserModule,
+    ProfileModule,
   ]
 })
 export class AppModule { }
