@@ -12,12 +12,10 @@ export class S3StorageService implements IStorage {
     @Inject(S3StorageConfig.KEY)
     private s3StorageConfig: ConfigType<typeof S3StorageConfig>,
   ) {
-    console.log('Configuring S3Storage');
     if (!this.s3StorageConfig.accessKeyId) console.warn('No accessKeyId');
     if (!this.s3StorageConfig.endpoint) console.warn('No endpoint');
     if (!this.s3StorageConfig.region) console.warn('No region');
-    if (!this.s3StorageConfig.secretAccessKey)
-      console.warn('No secretAccessKey');
+    if (!this.s3StorageConfig.secretAccessKey) console.warn('No secretAccessKey');
     this.S3 = new AWS.S3({
       s3ForcePathStyle: true,
       signatureVersion: 'v4',

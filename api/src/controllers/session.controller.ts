@@ -16,9 +16,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { IdentityService } from 'src/services/identity/identity.service';
+import { IdentityService } from 'src/services/identity.service';
 import { PasswordService } from 'src/services/password.service';
-import { StartSessionDto } from 'src/dtos/start-session.dto';
+import { CredentialDto } from 'src/dtos/credential.dto';
 
 @ApiTags('session')
 @Controller('session')
@@ -33,17 +33,13 @@ export class SessionController {
   @Post('')
   @ApiCreatedResponse({ description: 'session created' })
   @ApiBadRequestResponse({ description: 'invalid username or password' })
-  async startSession(@Res() res: Response, @Body() dto: StartSessionDto) {
+  async startSession(@Res() res: Response, @Body() dto: CredentialDto) {
     const { email, password } = dto;
-    const identity = await this.idSvc.findByEmail(email);
+    const identity = await this.idSvc.findByCredential(email, password);
     if (!identity)
       throw new UnauthorizedException();
 
-    const isAuthorized = await this.pwSvc.compare(password, identity.password);
-    if (!isAuthorized)
-      throw new UnauthorizedException();
-
-    res.cookie('uid', identity.userId, {
+    res.cookie('uid', identity.user, {
       maxAge: this.SESSION_LENGTH,
       httpOnly: true,
       signed: true,

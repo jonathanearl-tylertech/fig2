@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { User } from 'src/services/user/user.schema';
 
 export type IdentityDocument = Identity & Document;
 
@@ -34,7 +33,7 @@ export class Identity {
   type: IdentityType;
 
   @Prop()
-  userId: mongoose.Schema.Types.ObjectId;
+  user: mongoose.Schema.Types.ObjectId;
 }
 
 export const IdentitySchema = SchemaFactory.createForClass(Identity);

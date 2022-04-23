@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Identity } from 'src/schemas/identity.schema';
 
 export type UserDocument = User & Document;
 
@@ -16,6 +17,9 @@ export class User {
 
   @Prop({ default: '🐢' })
   icon: string;
+
+  @Prop()
+  identity: mongoose.Schema.Types.ObjectId;
 
   @Prop()
   modifedAt: Date;

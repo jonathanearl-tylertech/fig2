@@ -8,7 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PostService } from 'src/services/post/post.service';
+import { PostService } from 'src/services/post.service';
 
 @ApiTags('post')
 @Controller('post')
