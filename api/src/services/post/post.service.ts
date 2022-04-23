@@ -1,5 +1,5 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto } from 'src/dtos/create-post.dto';
 import { Post } from './entities/post.entity';
 import { PostModel } from './db/post.model';
 import { CommentModel } from './db/comment.model';

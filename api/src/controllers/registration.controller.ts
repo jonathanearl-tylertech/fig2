@@ -13,9 +13,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { RegisterUserDto } from 'src/controllers/registration/dto/register-user.dto';
-import { ValidateEmailDto } from 'src/controllers/registration/dto/validate-email.dto';
-import { ValidateUsernameDto } from 'src/controllers/registration/dto/validate-username.dto';
+import { RegisterUserDto } from 'src/dtos/register-user.dto';
+import { ValidateEmailDto } from 'src/dtos/validate-email.dto';
+import { ValidateUsernameDto } from 'src/dtos/validate-username.dto';
 import { IdentityService } from 'src/services/identity/identity.service';
 import { UserService } from 'src/services/user/user.service';
 

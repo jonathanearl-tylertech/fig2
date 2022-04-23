@@ -5,16 +5,17 @@ import {
   Patch,
   Delete,
   NotImplementedException,
+  Body,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { PostService } from 'src/services/post/post.service';
 
 @ApiTags('post')
 @Controller('post')
 export class PostController {
-  @Get('presignedImgUrl')
-  async getImgUrl() {
-    throw new NotImplementedException();
-  }
+  constructor(
+    private readonly postSvc: PostService,
+  ) {}
 
   @Get('q')
   searchPosts() {
@@ -22,8 +23,9 @@ export class PostController {
   }
 
   @Post()
-  createPost() {
-    throw new NotImplementedException();
+  createPost(@Body() body) {
+    console.log(body);
+    return 'hi';
   }
 
   @Get()

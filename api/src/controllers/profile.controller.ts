@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserService } from 'src/services/user/user.service';
-import { IconUpdateDto } from './dto/icon-update.dto';
-import { ProfileDto } from './dto/profile.dto';
-import { SummaryUpdateDto } from './dto/summary-update.dto';
+import { IconUpdateDto } from 'src/dtos/icon-update.dto';
+import { ProfileDto } from 'src/dtos/profile.dto';
+import { SummaryUpdateDto } from 'src/dtos/summary-update.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { Uid } from 'src/decorators/uid.decorator';
 import { ApiNoContentResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';

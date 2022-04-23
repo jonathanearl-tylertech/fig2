@@ -18,7 +18,7 @@ import {
 import { Request, Response } from 'express';
 import { IdentityService } from 'src/services/identity/identity.service';
 import { PasswordService } from 'src/services/password.service';
-import { StartSessionDto } from './dtos/start-session.dto';
+import { StartSessionDto } from 'src/dtos/start-session.dto';
 
 @ApiTags('session')
 @Controller('session')
