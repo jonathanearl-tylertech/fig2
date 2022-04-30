@@ -6,6 +6,8 @@ services:
     image: mongo:5
     ports:
       - 27017:27017
+    volumes:
+      - 'mongo_data:/data/db'
 
   redis:
     image: redis:6-alpine
@@ -14,15 +16,15 @@ services:
 
   minio:
     restart: unless-stopped
-    image: "minio/minio"
-    command: ["server", "/data"]
+    image: 'minio/minio'
+    command: ['server', '/data']
     environment:
       MINIO_ACCESS_KEY: MINIO_ACCESS_KEY
       MINIO_SECRET_KEY: MINIO_SECRET_KEY
     ports:
       - 9000:9000
     volumes:
-      - "minio_data:/data"
+      - 'minio_data:/data'
 
   rabbitmq:
     image: rabbitmq:3.8
@@ -32,3 +34,5 @@ services:
 
 volumes:
   minio_data:
+  mongo_data:
+
