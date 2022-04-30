@@ -1,25 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import AWS from 'aws-sdk';
-import { S3StorageConfig } from './S3StorageConfig';
-import { IStorage } from './storage.interface';
 
 @Injectable()
-export class S3StorageService implements IStorage {
+export class S3Service {
   private S3: AWS.S3;
 
   constructor(
-    @Inject(S3StorageConfig.KEY)
-    private s3StorageConfig: ConfigType<typeof S3StorageConfig>,
+    private configService: ConfigService,
   ) {
-    if (!this.s3StorageConfig.accessKeyId) console.warn('No accessKeyId');
-    if (!this.s3StorageConfig.endpoint) console.warn('No endpoint');
-    if (!this.s3StorageConfig.region) console.warn('No region');
-    if (!this.s3StorageConfig.secretAccessKey) console.warn('No secretAccessKey');
+    var accessKeyId = this.configService.get<string>('S3_KEY');
+    var secretAccessKey = this.configService.get<string>('S3_SECRET');
+    var endpoint = this.configService.get<string>('S3_ENDPOINT');
+    var region = this.configService.get<string>('S3_REGION');
+    if (!accessKeyId) console.warn('No S3_KEY');
+    if (!secretAccessKey) console.warn('No S3_KEY');
+    if (!endpoint) console.warn('No S3_ENDPOINT');
+    if (!region) console.warn('No S3_REGION');
     this.S3 = new AWS.S3({
       s3ForcePathStyle: true,
       signatureVersion: 'v4',
-      ...this.s3StorageConfig,
+      credentials: {
+        accessKeyId,
+        secretAccessKey
+      },
+      endpoint,
+      region
     });
   }
 
