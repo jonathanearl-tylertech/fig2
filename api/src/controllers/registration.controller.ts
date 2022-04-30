@@ -34,15 +34,18 @@ export class RegistrationController {
   @ApiNoContentResponse()
   @ApiBadRequestResponse()
   async RegisterUser(@Body() dto: ProfileCreateDto) {
-    const { email, password, username } = dto;
+    const { credentials, username } = dto;
     const icon = this.emojiSvc.generate();
     const user = await this.userSvc.create(username, icon);
     if (!user)
       throw new BadRequestException(`username '${username}' already taken`);
 
-    const identity = await this.idSvc.create(email, password);
-    if (!identity)
-      throw new BadRequestException(`email '${email}' already taken`)
+    const identity = await this.idSvc.create(credentials.email, credentials.password);
+    if (!identity) {
+      await this.userSvc.remove(user.id);
+      throw new BadRequestException(`email '${credentials.email}' already taken`);
+    }
+
     await this.idSvc.update(identity.id, { user: user._id });
     await this.userSvc.update(user.id, { identity: identity._id });
   }
