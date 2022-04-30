@@ -17,14 +17,23 @@ services:
   minio:
     restart: unless-stopped
     image: 'minio/minio'
-    command: ['server', '/data']
+    command: ['server', '/data', '--console-address', ':9001']
     environment:
-      MINIO_ACCESS_KEY: MINIO_ACCESS_KEY
-      MINIO_SECRET_KEY: MINIO_SECRET_KEY
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
     ports:
       - 9000:9000
+      - 9001:9001
     volumes:
       - 'minio_data:/data'
+
+  mc:
+    image: 'minio/mc'
+    volumes:
+      - './mc/entrypoint.sh:/fig/entrypoint.sh'
+    entrypoint: '/fig/entrypoint.sh'
+    depends_on:
+      - minio
 
   rabbitmq:
     image: rabbitmq:3.8
