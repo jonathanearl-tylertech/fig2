@@ -13,6 +13,8 @@ import { Identity, IdentitySchema } from './schemas/identity.schema';
 import { Post, PostSchema } from './schemas/post.schema';
 import { Comment, CommentSchema } from './schemas/comment.schema';
 import { User, UserSchema } from './schemas/user.schema';
+import { S3Service } from './services/s3.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [
@@ -22,6 +24,7 @@ import { User, UserSchema } from './schemas/user.schema';
     SessionController,
   ],
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost/fig'),
     MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
@@ -33,6 +36,7 @@ import { User, UserSchema } from './schemas/user.schema';
     IdentityService,
     PasswordService,
     PostService,
+    S3Service,
     UserService,
   ],
 })

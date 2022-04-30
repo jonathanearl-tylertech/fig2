@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Identity } from 'src/schemas/identity.schema';
+import { Post } from './post.schema';
 
 export type UserDocument = User & Document;
 
@@ -23,6 +23,9 @@ export class User {
 
   @Prop()
   modifedAt: Date;
+
+  @Prop()
+  posts: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ default: 'Everything has beauty, but not everyone sees it.' })
   summary: string;
