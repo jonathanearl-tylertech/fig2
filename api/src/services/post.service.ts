@@ -13,7 +13,7 @@ export class PostService {
     @InjectModel(User.name) private user: Model<UserDocument>,
   ) { }
 
-  create = async (description: string, authorId: string) => {
+  create = async (authorId: string) => {
     const author = await this.user.findById(authorId);
     if (!author)
       throw new InternalServerErrorException(`owner not found ownerId:${authorId}`);
@@ -21,7 +21,6 @@ export class PostService {
     const post = await this.post.create({
       _id: new mongoose.mongo.ObjectId(),
       author: authorId,
-      description,
       status: PostStatus.pending,
     });
     author.posts.push(post._id);
@@ -35,6 +34,11 @@ export class PostService {
 
   findOne = async (id: string) => {
     return await this.post.findById(id).lean();
+  }
+
+  update = async (id: string, doc: Partial<Post>) => {
+    const result = await this.post.findOneAndUpdate({ id }, doc).lean();
+    return result._id.toString();
   }
 
   remove = async (id: string) => {
