@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MaxLength } from 'class-validator';
 
-export class PresignUrlCreateDto {
+export class PostCreate {
   @ApiProperty({ type: String })
   @MaxLength(255)
-  postDescription: string;
+  description: string;
 }

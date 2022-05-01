@@ -15,6 +15,7 @@ import { Comment, CommentSchema } from './schemas/comment.schema';
 import { User, UserSchema } from './schemas/user.schema';
 import { S3Service } from './services/s3.service';
 import { ConfigModule } from '@nestjs/config';
+import { RabbitMqService } from './services/rabbitmq.service';
 
 @Module({
   controllers: [
@@ -36,6 +37,7 @@ import { ConfigModule } from '@nestjs/config';
     IdentityService,
     PasswordService,
     PostService,
+    RabbitMqService,
     S3Service,
     UserService,
   ],
