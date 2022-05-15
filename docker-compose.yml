@@ -17,12 +17,12 @@ services:
   minio:
     restart: unless-stopped
     image: 'minio/minio'
-    command: ['server', '/data', '--console-address', ':9001']
+    command: ['server', '/data', '--console-address', ':9001', '--address', ':80']
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     ports:
-      - 9000:9000
+      - 80:80
       - 9001:9001
     volumes:
       - 'minio_data:/data'

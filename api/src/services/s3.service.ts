@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import AWS from 'aws-sdk';
+import { RequestPresigningArguments } from '@aws-sdk/types'
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client, CreateBucketCommand, PutObjectCommand, ListObjectsCommand, ListObjectsOutput } from "@aws-sdk/client-s3";
 
 @Injectable()
 export class S3Service {
-  private S3: AWS.S3;
+  private S3: S3Client;
 
   constructor(
     private configService: ConfigService,
@@ -17,49 +19,56 @@ export class S3Service {
     if (!secretAccessKey) console.warn('No S3_KEY');
     if (!endpoint) console.warn('No S3_ENDPOINT');
     if (!region) console.warn('No S3_REGION');
-    this.S3 = new AWS.S3({
-      s3ForcePathStyle: true,
-      signatureVersion: 'v4',
-      credentials: {
-        accessKeyId,
-        secretAccessKey
-      },
+    this.S3 = new S3Client({
+      region,
+      forcePathStyle: true,
+      credentials: { accessKeyId, secretAccessKey },
       endpoint,
-      region
     });
   }
 
-  createBucket(bucketName: string) {
-    const params: AWS.S3.CreateBucketRequest = {
-      Bucket: bucketName,
-      ACL: 'public-read',
-    };
-
-    return new Promise<void>((resolve, reject) => {
-      this.S3.createBucket(params, (err) => {
-        if (err && err.code === 'BucketAlreadyOwnedByYou') return;
-
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+  createPublicBucket = async (bucketName: string) => {
+    try {
+      const cmd = new CreateBucketCommand({ Bucket: bucketName, ACL: 'public-read' })
+      await this.S3.send(cmd);
+      return true;
+    } catch (err) {
+      throw new InternalServerErrorException(err, `cannot createBucket: Bucket:${bucketName}`)
+    }
   }
 
-  getSignedUrl(bucketName: string, key: string) {
-    return new Promise<string>((resolve, reject) => {
-      this.S3.getSignedUrl(
-        'putObject',
-        {
-          Bucket: bucketName,
-          Key: key,
-        },
-        (err, url) => {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(url);
-        },
-      );
-    });
+  getFileInfo = async (bucketName: string, key: string) => {
+    try {
+      const cmd = new ListObjectsCommand({
+        Bucket: bucketName,
+        Prefix: key,
+        MaxKeys: 1,
+      })
+      const response: ListObjectsOutput = await this.S3.send(cmd);
+      if (response.Contents.length == 0)
+        return null;
+
+      return response.Contents[0];
+    } catch (err) {
+      throw new InternalServerErrorException(err, `cannot getFileInfo: Bucket:${bucketName} Key:${key}`)
+    }
+  }
+
+  getSignedUrl = async (bucketName: string, key: string) => {
+    try {
+      const cmd = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      })
+      const options: RequestPresigningArguments = {
+        expiresIn: 60,
+
+      }
+      const url = await getSignedUrl(this.S3, cmd, { expiresIn: 60 });
+      console.log(url);
+      return url;
+    } catch (err) {
+      throw new InternalServerErrorException(err, `cannot getSignedUrl  Bucket:${bucketName} Key:${key}`);
+    }
   }
 }
