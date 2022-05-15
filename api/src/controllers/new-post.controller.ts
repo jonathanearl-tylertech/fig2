@@ -3,81 +3,87 @@ import {
   Post,
   Body,
   UseGuards,
-  Get,
-  Param,
-  NotFoundException,
-  BadRequestException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import {
-  ApiNoContentResponse,
-  ApiOkResponse,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiTags
 } from '@nestjs/swagger';
+import { Express } from 'express'
+import { mkdir } from 'fs';
+import mongoose from 'mongoose';
+import multer from 'multer';
 import { Uid } from 'src/decorators/uid.decorator';
-import { PostCreate as PostCreate } from 'src/dtos/post-create';
-import { PresignUrlDto } from 'src/dtos/presign-url.dto';
+import { PostCreate } from 'src/dtos/post-create';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { PostStatus } from 'src/schemas/post.schema';
 import { PostService } from 'src/services/post.service';
-import { RabbitMqService } from 'src/services/rabbitmq.service';
-import { S3Service } from 'src/services/s3.service';
+
+const storage = multer.diskStorage({
+  // destination: ,
+  destination: (req, file, cb) => {
+    const destination = `/home/jon/wte/fig/media/posts/${req.signedCookies.uid}`;
+    mkdir(destination, (_) => cb(null, destination));
+  },
+  filename: function (req, file, cb) {
+    const postId = new mongoose.mongo.ObjectId();
+    cb(null, postId.toString());
+  }
+});
 
 @ApiTags('new-post')
 @Controller('new-post')
 export class NewPostController {
-  private readonly stagedBucket = 'staged';
-  private readonly publishedBucket = 'published';
-  private stagedKey = (uid: string, pid: string) => (`${uid}/${pid}`);
-  private publishedKey = (uid: string, pid: string) => (`post/${pid}`);
-  private messageQueue = 'publish-image';
-  private message = (uid: string, postId: string) => JSON.stringify({
-    bucket: this.stagedBucket,
-    key: this.stagedKey(uid, postId),
-    targetBucket: this.publishedBucket,
-    targetKey: this.publishedKey(uid, postId),
-  })
-
   constructor(
+    private readonly configSvc: ConfigService,
     private readonly postSvc: PostService,
-    private readonly s3Svc: S3Service,
-    private readonly rabbitSvc: RabbitMqService
   ) { }
 
-  @Get('presigned-url')
+  @Post()
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'get post url to upload' })
-  @ApiOkResponse({ type: PresignUrlDto, description: 'a presigned url to stage post media to' })
-  async getPresignedUrl(
+  @UseInterceptors(FileInterceptor('image', {
+    limits: {
+      fileSize: 2000000,
+      fields: 10,
+      files: 1,
+      parts: 50,
+    },
+    storage: storage,
+  } as MulterOptions))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        description: {
+          type: 'string'
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'create post with staged image' })
+  @ApiCreatedResponse({type: String, description: 'location of post'})
+  @ApiNotFoundResponse({ type: String })
+  async CreatePost(
     @Uid() uid: string,
+    @UploadedFile() image: Express.Multer.File,
+    @Body() createPost: PostCreate
   ) {
-    const post = await this.postSvc.create(uid);
-    const stagedKey = this.stagedKey(uid, post._id);
-    const imageUploadUrl = await this.s3Svc.getSignedUrl(this.stagedBucket, stagedKey);
-    return {
-      imageUploadUrl,
-      postId: post._id
-    };
-  }
-
-  @Post(':id')
-  @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'create post' })
-  @ApiNoContentResponse()
-  async submitPost(
-    @Param('id') id: string,
-    @Body() body: PostCreate,
-    @Uid() uid: string,
-  ) {
-    const { description } = body;
-    const post = await this.postSvc.findOne(id);
-    if (!post)
-      return new NotFoundException();
-
-    if (post.status != PostStatus.pending)
-      return new BadRequestException(`post: '${id}' already submitted, status: '${post.status}'`);
-
-    await this.postSvc.update(post._id, { status: PostStatus.staged, description });
-    this.rabbitSvc.send(this.messageQueue, this.message(uid, post._id));
+    const { description } = createPost;
+    const post = await this.postSvc.create(image.filename, uid, description)
+    const baseUrl = this.configSvc.get("BASE_URL");
+    const postUrl = `${baseUrl}/posts/${post._id}`;
+    return postUrl;
   }
 }

@@ -1,5 +1,4 @@
 **/node_modules
 **/dist
 **/seed/output_data
-profilesvc/__debug_bin
-webapi/__debug_bin
+**/media

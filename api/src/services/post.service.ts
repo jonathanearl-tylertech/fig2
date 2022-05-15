@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
-import { Post, PostDocument, PostStatus } from 'src/schemas/post.schema';
+import { Post, PostDocument } from 'src/schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument } from 'src/schemas/comment.schema';
 import { User, UserDocument } from 'src/schemas/user.schema';
@@ -13,15 +13,16 @@ export class PostService {
     @InjectModel(User.name) private user: Model<UserDocument>,
   ) { }
 
-  create = async (authorId: string) => {
+  create = async (fileName: string, authorId: string, description: string) => {
     const author = await this.user.findById(authorId);
     if (!author)
-      throw new InternalServerErrorException(`owner not found ownerId:${authorId}`);
+      throw new NotFoundException(`user not found userId:${authorId}`);
 
+    var postId = new mongoose.mongo.ObjectId(fileName);
     const post = await this.post.create({
-      _id: new mongoose.mongo.ObjectId(),
-      author: authorId,
-      status: PostStatus.pending,
+      _id: postId,
+      author: author._id,
+      description,
     });
     author.posts.push(post._id);
     await author.save();

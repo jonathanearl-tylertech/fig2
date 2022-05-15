@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   Get,
   Param,
@@ -8,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
@@ -33,19 +35,20 @@ export class RegistrationController {
   @ApiOperation({ summary: 'registers a new user' })
   @ApiNoContentResponse()
   @ApiBadRequestResponse()
+  @ApiConflictResponse()
   async RegisterUser(@Body() dto: ProfileCreateDto) {
     const { credentials, username } = dto;
     const icon = this.emojiSvc.generate();
-    const user = await this.userSvc.create(username, icon);
-    if (!user)
-      throw new BadRequestException(`username '${username}' already taken`);
+    const identityExists = await this.idSvc.findByEmail(credentials.email);
+    if (identityExists)
+      throw new ConflictException(`email: ${credentials.email} already in use.`);
+
+    const userExists = await this.userSvc.findByUsername(username);
+    if (userExists)
+      throw new ConflictException(`username: ${username} already in use.`);
 
     const identity = await this.idSvc.create(credentials.email, credentials.password);
-    if (!identity) {
-      await this.userSvc.remove(user.id);
-      throw new BadRequestException(`email '${credentials.email}' already taken`);
-    }
-
+    const user = await this.userSvc.create(username, icon);
     await this.idSvc.update(identity.id, { user: user._id });
     await this.userSvc.update(user.id, { identity: identity._id });
   }

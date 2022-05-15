@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EmojiGeneratorService } from 'src/services/emoji-generator.service';
 import { PasswordService } from 'src/services/password.service';
 import { UserService } from 'src/services/user.service';
-import { PostController } from 'src/controllers/post.controller';
 import { ProfileController } from 'src/controllers/profile.controller';
 import { RegistrationController } from 'src/controllers/registration.controller';
 import { SessionController } from 'src/controllers/session.controller';
@@ -16,10 +16,12 @@ import { User, UserSchema } from './schemas/user.schema';
 import { S3Service } from './services/s3.service';
 import { ConfigModule } from '@nestjs/config';
 import { RabbitMqService } from './services/rabbitmq.service';
+import { NewPostController } from './controllers/new-post.controller';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   controllers: [
-    PostController,
+    NewPostController,
     ProfileController,
     RegistrationController,
     SessionController,
@@ -31,6 +33,10 @@ import { RabbitMqService } from './services/rabbitmq.service';
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    ServeStaticModule.forRoot({
+      rootPath: join('/home/jon/wte/fig/media'),
+      serveRoot: '/media',
+    }),
   ],
   providers: [
     EmojiGeneratorService,
