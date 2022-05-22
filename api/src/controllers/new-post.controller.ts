@@ -20,13 +20,13 @@ import {
 import { Express } from 'express'
 import { mkdir } from 'fs';
 import mongoose from 'mongoose';
-import multer from 'multer';
+import { diskStorage } from 'multer';
 import { Uid } from 'src/decorators/uid.decorator';
 import { PostCreate } from 'src/dtos/post-create';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { PostService } from 'src/services/post.service';
 
-const storage = multer.diskStorage({
+const storage = diskStorage({
   // destination: ,
   destination: (req, file, cb) => {
     const destination = `/home/jon/wte/fig/media/posts/${req.signedCookies.uid}`;
