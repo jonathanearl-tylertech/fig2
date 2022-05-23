@@ -2,7 +2,6 @@ import { Button, TextField } from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
-import HorizontalLine from '../components/HorizontalLine';
 
 export default function Login() {
   return (<>
@@ -11,6 +10,7 @@ export default function Login() {
           <Logo>
             🌰<Image src='/logo.png' width="100" height="90"/>
           </Logo>
+          <h1>Login</h1>
           <EmailField name='email' label='Email' variant='outlined' size='small'/>
           <PasswordField name='password' label='Password' type='password' variant='outlined' size="small" />
           <SubmitButton type='submit' color='primary' variant='contained'>log in</SubmitButton>
