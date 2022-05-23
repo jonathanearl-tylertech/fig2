@@ -4,6 +4,7 @@ import {
   Delete,
   NotFoundException,
   Post,
+  Redirect,
   Req,
   Res,
   UnauthorizedException,
@@ -31,7 +32,7 @@ export class SessionController {
 
   @Post('')
   @ApiConsumes('multipart/form-data')
-  @ApiCreatedResponse({ description: 'session created' })
+  @Redirect('/')
   @ApiBadRequestResponse({ description: 'invalid username or password' })
   async startSession(@Req() req: Request, @Res() res: Response, @Body() dto: CredentialDto) {
     const { email, password } = dto;
@@ -44,16 +45,11 @@ export class SessionController {
       httpOnly: true,
       signed: true,
     });
-    res.sendStatus(201);
   }
 
   @Delete('')
-  @ApiNoContentResponse({ description: 'session deleted' })
-  @ApiNotFoundResponse({ description: 'no session found' })
-  async endSession(@Req() req: Request, @Res() res: Response) {
-    const { uid } = req.signedCookies;
-    if (!uid) throw new NotFoundException('no session found');
+  @Redirect('/')
+  async endSession(@Res() res: Response) {
     res.clearCookie('uid', { maxAge: -1 });
-    res.sendStatus(204);
   }
 }
