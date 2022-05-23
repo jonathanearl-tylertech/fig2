@@ -1,11 +1,11 @@
 import {
-  BadRequestException,
   Body,
   ConflictException,
   Controller,
   Get,
   Param,
   Post,
+  Redirect,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -33,21 +33,21 @@ export class RegistrationController {
 
   @Post('')
   @ApiOperation({ summary: 'registers a new user' })
-  @ApiNoContentResponse()
+  @Redirect('/login')
   @ApiBadRequestResponse()
   @ApiConflictResponse()
   async RegisterUser(@Body() dto: ProfileCreateDto) {
-    const { credentials, username } = dto;
+    const { email, password, username } = dto;
     const icon = this.emojiSvc.generate();
-    const identityExists = await this.idSvc.findByEmail(credentials.email);
+    const identityExists = await this.idSvc.findByEmail(email);
     if (identityExists)
-      throw new ConflictException(`email: ${credentials.email} already in use.`);
+      throw new ConflictException(`email: ${email} already in use.`);
 
     const userExists = await this.userSvc.findByUsername(username);
     if (userExists)
       throw new ConflictException(`username: ${username} already in use.`);
 
-    const identity = await this.idSvc.create(credentials.email, credentials.password);
+    const identity = await this.idSvc.create(email, password);
     const user = await this.userSvc.create(username, icon);
     await this.idSvc.update(identity.id, { user: user._id });
     await this.userSvc.update(user.id, { identity: identity._id });
