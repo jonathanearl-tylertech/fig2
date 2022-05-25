@@ -1,4 +1,5 @@
 import { Button, TextField } from '@mui/material';
+import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
@@ -18,6 +19,20 @@ export default function Login() {
       </Form>
     </Container>
   </>);
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req } = context;
+  const cookie = req.cookies['uid'];
+  if (cookie)
+    return { 
+      redirect: {
+        destination: '/profile',
+        permanent: false,
+      }
+    };
+
+  return { props: {} };
 }
 
 const Container = styled.section`
