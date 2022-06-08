@@ -1,5 +1,4 @@
 import { PostDto } from "../dtos/post.dto";
-import { AuthHelper } from "./auth-helper";
 class PostService {
   private baseUri: string;
 
@@ -8,11 +7,9 @@ class PostService {
   }
 
   async addComment(_id: string, message: string) {
-    const token = await AuthHelper.getToken();
     const options = { 
       method: 'POST', 
       headers: { 
-        authorization: `Bearer ${token}`,
         accept: 'application/json',
         'content-type': 'application/json',
       },
@@ -23,10 +20,8 @@ class PostService {
   }
 
   async getPost(_id: string) {
-    const token = await AuthHelper.getToken();
     const options = { 
       headers: { 
-        authorization: `Bearer ${token}`,
         accept: 'application/json',
       } 
     };
@@ -37,14 +32,12 @@ class PostService {
   }
 
   async search(q: Partial<{profileId: string, username: string}>) {
-    const token = await AuthHelper.getToken();
-    const options = { headers: { authorization: `Bearer ${token}` } };
     const url = new URL(`${this.baseUri}/q`);
     if(q.profileId)
       url.searchParams.append('profileId', q.profileId)
     if(q.username)
       url.searchParams.append('username', q.username)
-    const response = await fetch(url.toString(), options);
+    const response = await fetch(url.toString());
     const result: PostDto[] = await response.json();
     return result;
   }

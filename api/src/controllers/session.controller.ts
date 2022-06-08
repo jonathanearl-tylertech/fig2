@@ -32,12 +32,6 @@ export class SessionController {
     const identity = await this.idSvc.findByCredential(email, password);
     if (!identity)
       throw new NotFoundException();
-
-    res.cookie('uid', identity.user, {
-      maxAge: this.SESSION_LENGTH,
-      httpOnly: true,
-      signed: true,
-    });
   }
 
   @Delete()

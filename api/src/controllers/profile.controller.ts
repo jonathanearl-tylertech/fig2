@@ -11,6 +11,22 @@ import { Uid } from 'src/decorators/uid.decorator';
 export class ProfileController {
   constructor(private readonly userSvc: UserService) { }
 
+  @Get('')
+  @ApiOperation({ summary: 'retrieve user profile' })
+  @ApiOkResponse()
+  async SearchProfiles() {
+    const users = await this.userSvc.findAll();
+    const response = users.map(user => { 
+      return {
+        icon: user.icon,
+        id: user._id,
+        username: user.username,
+        summary: user.summary
+      }
+    });
+    return response;
+  }
+
   @Get(':uid')
   @ApiOperation({ summary: 'retrieve user profile' })
   @ApiOkResponse({ type: ProfileDto })
