@@ -6,7 +6,7 @@ import { PasswordService } from 'src/services/password.service';
 import { UserService } from 'src/services/user.service';
 import { ProfileController } from 'src/controllers/profile.controller';
 import { RegistrationController } from 'src/controllers/registration.controller';
-import { SessionController } from 'src/controllers/session.controller';
+import { IdentityController } from 'src/controllers/identity.controller';
 import { IdentityService } from 'src/services/identity.service';
 import { PostService } from 'src/services/post.service';
 import { Identity, IdentitySchema } from './schemas/identity.schema';
@@ -24,7 +24,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     NewPostController,
     ProfileController,
     RegistrationController,
-    SessionController,
+    IdentityController,
   ],
   imports: [
     ConfigModule.forRoot(),

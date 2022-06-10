@@ -33,18 +33,6 @@ export class IdentityService {
     return await this.identity.find().lean();
   }
 
-  findByCredential = async (email: string, password: string) => {
-    const identity = await this.findByEmail(email);
-    if (!identity)
-      return null;
-
-    const isAuthorized = await this.pwSvc.compare(password, identity.password);
-    if (!isAuthorized)
-      return null;
-
-    return identity;
-  }
-
   findById = async (id: string) => {
     return await this.identity.findById(id).lean();
   }
