@@ -3,11 +3,27 @@ import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import React from 'react';
 import styled from 'styled-components';
+import { getUidFromCookie } from '../services/cookie.service';
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  try {
+    const uid = getUidFromCookie(context.req, context.res);
+    return { 
+      redirect: {
+        destination: '/profile',
+        permanent: false,
+      }
+    };
+  } catch (err) {
+    console.error(err);
+    return { props: {} };
+  }
+}
 
 export default function Login() {
   return (<>
     <Container>
-      <Form action='/api/v1/session' method='POST'>
+      <Form action='/api/v1/login' method='POST'>
           <Logo>
             🌰<Image src='/logo.png' width="100" height="90"/>
           </Logo>
@@ -19,20 +35,6 @@ export default function Login() {
       </Form>
     </Container>
   </>);
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req } = context;
-  const cookie = req.cookies['uid'];
-  if (cookie)
-    return { 
-      redirect: {
-        destination: '/profile',
-        permanent: false,
-      }
-    };
-
-  return { props: {} };
 }
 
 const Container = styled.section`
