@@ -4,10 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { EmojiGeneratorService } from 'src/services/emoji-generator.service';
 import { PasswordService } from 'src/services/password.service';
 import { UserService } from 'src/services/user.service';
-import { ProfileController } from 'src/controllers/profile.controller';
-import { RegistrationController } from 'src/controllers/registration.controller';
 import { IdentityController } from 'src/controllers/identity.controller';
-import { IdentityService } from 'src/services/identity.service';
 import { PostService } from 'src/services/post.service';
 import { Identity, IdentitySchema } from './schemas/identity.schema';
 import { Post, PostSchema } from './schemas/post.schema';
@@ -18,13 +15,13 @@ import { ConfigModule } from '@nestjs/config';
 import { RabbitMqService } from './services/rabbitmq.service';
 import { NewPostController } from './controllers/new-post.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { UserController } from './controllers/user.controller';
 
 @Module({
   controllers: [
-    NewPostController,
-    ProfileController,
-    RegistrationController,
     IdentityController,
+    NewPostController,
+    UserController,
   ],
   imports: [
     ConfigModule.forRoot(),
@@ -40,7 +37,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
   ],
   providers: [
     EmojiGeneratorService,
-    IdentityService,
     PasswordService,
     PostService,
     RabbitMqService,
