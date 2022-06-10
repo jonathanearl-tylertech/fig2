@@ -25,13 +25,11 @@ import {
   IdentityDocument,
   IdentityType
 } from 'src/schemas/identity.schema';
-import { IdentityCreateDto } from 'src/dtos/identity-create.dto';
+import { CredentialsDto } from 'src/dtos/credentials.dto';
 import { IdentitySearchResultDto } from 'src/dtos/identity-search.dto';
-import { IdentityFindOneDto as IdentityFindOneDto } from 'src/dtos/identity-findOne.dto';
-import { IdentityDeleteDto } from 'src/dtos/identity-delete.dto';
-import { IdentityMapperInterceptor as IdentityMapperInterceptor } from 'src/interceptors/identity-mapper.interceptor';
+import { IdentityMapperInterceptor } from 'src/interceptors/identity-mapper.interceptor';
 import { IdentitySearchMapperInterceptor } from 'src/interceptors/identity-search-mapper.interceptor';
-
+import { ObjectIdDto } from 'src/dtos/objectid.dto';
 
 @ApiTags('identity')
 @Controller('identity')
@@ -58,8 +56,9 @@ export class IdentityController {
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: Identity })
   @UseInterceptors(IdentityMapperInterceptor)
-  async findOne(@Param() params: IdentityFindOneDto) {
-    const doc = await this.identity.findOne({ _id: params.id });
+  async findOne(@Param() params: ObjectIdDto) {
+    const { id } = params
+    const doc = await this.identity.findById(id);
     if (!doc)
       throw new NotFoundException();
     return doc;
@@ -68,8 +67,9 @@ export class IdentityController {
   @Delete(':id')
   @ApiNoContentResponse()
   @ApiNotFoundResponse()
-  async remove(@Param() params: IdentityDeleteDto) {
-    const doc = await this.identity.findByIdAndRemove(params.id);
+  async remove(@Param() params: ObjectIdDto) {
+    const { id } = params
+    const doc = await this.identity.findByIdAndRemove(id);
     if (!doc)
       throw new NotFoundException();
   }
@@ -78,8 +78,9 @@ export class IdentityController {
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: Identity })
   @UseInterceptors(IdentityMapperInterceptor)
-  async update(@Param('id') id: string, update: Partial<Identity>) {
-    const doc = await this.identity.findOneAndUpdate({ id }, update).lean();
+  async update(@Param() params: ObjectIdDto, identity: Partial<Identity>) {
+    const { id } = params;
+    const doc = await this.identity.findOneAndUpdate({ id }, identity).lean();
     if (!doc)
       throw new NotFoundException();
     return doc;
@@ -88,8 +89,8 @@ export class IdentityController {
   @Post()
   @ApiOkResponse()
   @UseInterceptors(IdentityMapperInterceptor)
-  async create(@Body() body: IdentityCreateDto) {
-    const { email, password } = body;
+  async create(@Body() identity: CredentialsDto) {
+    const { email, password } = identity;
     const hash = await this.pwSvc.hash(password);
     const doc = await this.identity.create({
       _id: new mongoose.Types.ObjectId(),
