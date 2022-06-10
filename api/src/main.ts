@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
+import 'reflect-metadata';
 
 dotenv.config();
 
