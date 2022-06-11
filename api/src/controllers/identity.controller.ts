@@ -19,11 +19,11 @@ import {
 } from '@nestjs/swagger';
 import { PasswordService } from 'src/services/password.service';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { FilterQuery, Model } from 'mongoose';
 import {
   Identity,
   IdentityDocument,
-  IdentityType
+  IdentityType,
 } from 'src/schemas/identity.schema';
 import { CredentialsDto } from 'src/dtos/credentials.dto';
 import { IdentitySearchResultDto } from 'src/dtos/identity-search.dto';
@@ -37,17 +37,15 @@ export class IdentityController {
   constructor(
     @InjectModel(Identity.name) private identity: Model<IdentityDocument>,
     private readonly pwSvc: PasswordService,
-  ) { }
+  ) {}
 
   @Get()
-  @ApiQuery({ name: "email", type: String, required: false })
+  @ApiQuery({ name: 'email', type: String, required: false })
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: IdentitySearchResultDto })
   @UseInterceptors(IdentitySearchMapperInterceptor)
   async findAll(@Query('email') email?: string) {
-    const filter = {};
-    if (email)
-      filter['email'] = email;
+    const filter: FilterQuery<{email?: string}> = email ? { email } : {};
     const docs = await this.identity.find(filter).lean();
     return docs;
   }
@@ -57,10 +55,9 @@ export class IdentityController {
   @ApiOkResponse({ type: Identity })
   @UseInterceptors(IdentityMapperInterceptor)
   async findOne(@Param() params: ObjectIdDto) {
-    const { id } = params
+    const { id } = params;
     const doc = await this.identity.findById(id);
-    if (!doc)
-      throw new NotFoundException();
+    if (!doc) throw new NotFoundException();
     return doc;
   }
 
@@ -68,10 +65,9 @@ export class IdentityController {
   @ApiNoContentResponse()
   @ApiNotFoundResponse()
   async remove(@Param() params: ObjectIdDto) {
-    const { id } = params
+    const { id } = params;
     const doc = await this.identity.findByIdAndRemove(id);
-    if (!doc)
-      throw new NotFoundException();
+    if (!doc) throw new NotFoundException();
   }
 
   @Patch(':id')
@@ -81,8 +77,7 @@ export class IdentityController {
   async update(@Param() params: ObjectIdDto, identity: Partial<Identity>) {
     const { id } = params;
     const doc = await this.identity.findOneAndUpdate({ id }, identity).lean();
-    if (!doc)
-      throw new NotFoundException();
+    if (!doc) throw new NotFoundException();
     return doc;
   }
 

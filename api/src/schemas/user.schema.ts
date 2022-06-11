@@ -9,7 +9,7 @@ export class User {
   @Prop()
   _id: mongoose.Schema.Types.ObjectId;
 
-  @Prop()
+  @Prop({ default: () => Date.now() })
   createdAt: Date;
 
   @Prop({ default: false })
@@ -32,7 +32,7 @@ export class User {
 
   @Prop({
     required: true,
-    unique: true
+    unique: true,
   })
   username: string;
 }

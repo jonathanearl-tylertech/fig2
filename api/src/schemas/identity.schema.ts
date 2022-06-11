@@ -4,17 +4,26 @@ import { Exclude, Expose, Transform } from 'class-transformer';
 import mongoose, { Document } from 'mongoose';
 
 export type IdentityDocument = Identity & Document;
-export enum IdentityStatus { Staged, Activated, Suspended }
-export enum IdentityType { Local }
-const IDENTITY_STATUS = {
-  0: "STAGED",
-  1: "ACTIVATED",
-  2: "SUSPENDED"
+
+export enum IdentityStatus {
+  Staged,
+  Activated,
+  Suspended,
 }
 
-const IDENTITY_TYPE = {
-  0: "Local",
+export enum IdentityType {
+  Local,
 }
+
+export const IDENTITY_STATUS = {
+  0: 'STAGED',
+  1: 'ACTIVATED',
+  2: 'SUSPENDED',
+};
+
+export const IDENTITY_TYPE = {
+  0: 'Local',
+};
 
 @Schema()
 export class Identity {
@@ -28,7 +37,7 @@ export class Identity {
 
   @Prop({})
   @Expose()
-  @Transform(value => value.obj._id.toString())
+  @Transform((value) => value.obj._id.toString())
   @ApiProperty({ type: String })
   id: string;
 
@@ -46,19 +55,19 @@ export class Identity {
 
   @Prop({
     required: true,
-    default: IdentityStatus.Activated
+    default: IdentityStatus.Activated,
   })
   @Expose()
-  @Transform(value => IDENTITY_STATUS[value.obj.status])
+  @Transform((value) => IDENTITY_STATUS[value.obj.status])
   @ApiProperty({ type: String })
   status: IdentityStatus;
 
   @Prop({
     required: true,
-    default: IdentityType.Local
+    default: IdentityType.Local,
   })
   @Expose()
-  @Transform(value => IDENTITY_TYPE[value.obj.type])
+  @Transform((value) => IDENTITY_TYPE[value.obj.type])
   @ApiProperty({ type: String })
   type: IdentityType;
 

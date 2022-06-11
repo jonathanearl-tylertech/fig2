@@ -11,8 +11,8 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser(process.env.COOKIE_SECRET));
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe());

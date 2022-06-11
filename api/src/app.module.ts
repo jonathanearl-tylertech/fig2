@@ -13,20 +13,17 @@ import { User, UserSchema } from './schemas/user.schema';
 import { S3Service } from './services/s3.service';
 import { ConfigModule } from '@nestjs/config';
 import { RabbitMqService } from './services/rabbitmq.service';
-import { NewPostController } from './controllers/new-post.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UserController } from './controllers/user.controller';
 
 @Module({
-  controllers: [
-    IdentityController,
-    NewPostController,
-    UserController,
-  ],
+  controllers: [IdentityController, UserController],
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost/fig'),
-    MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }]),
+    MongooseModule.forFeature([
+      { name: Identity.name, schema: IdentitySchema },
+    ]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -44,4 +41,4 @@ import { UserController } from './controllers/user.controller';
     UserService,
   ],
 })
-export class AppModule { }
+export class AppModule {}
