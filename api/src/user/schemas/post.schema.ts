@@ -1,10 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Comment } from 'src/schemas/comment.schema';
+import { Comment } from 'src/user/schemas/comment.schema';
 
 export type PostDocument = Post & Document;
 
-export enum PostStatus { pending, staged, published, hidden }
+export enum PostStatus {
+  pending,
+  staged,
+  published,
+  hidden,
+}
 
 @Schema()
 export class Post {
@@ -15,22 +20,22 @@ export class Post {
   author: mongoose.Schema.Types.ObjectId;
 
   @Prop()
-  comments: [Comment]
+  comments: [Comment];
 
   @Prop()
   createdAt: Date;
 
   @Prop()
-  description: String;
+  description: string;
 
   @Prop()
-  imgUrl: String;
+  imgUrl: string;
 
   @Prop()
   modifedAt: Date;
 
   @Prop()
-  status: PostStatus
+  status: PostStatus;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

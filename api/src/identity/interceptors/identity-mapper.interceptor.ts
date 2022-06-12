@@ -7,7 +7,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Identity } from 'src/schemas/identity.schema';
+import { Identity } from '../schemas/identity.schema';
 
 @Injectable()
 export class IdentityMapperInterceptor implements NestInterceptor {

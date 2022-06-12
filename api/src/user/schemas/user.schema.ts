@@ -1,13 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
-import { Post } from './post.schema';
+import { Document, Types } from 'mongoose';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
   @Prop()
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: Types.ObjectId;
 
   @Prop({ default: () => Date.now() })
   createdAt: Date;
@@ -19,13 +18,13 @@ export class User {
   icon: string;
 
   @Prop()
-  identity: mongoose.Schema.Types.ObjectId;
+  identity: Types.ObjectId;
 
   @Prop()
   modifedAt: Date;
 
   @Prop()
-  posts: mongoose.Schema.Types.ObjectId[];
+  posts: Types.ObjectId[];
 
   @Prop({ default: 'Everything has beauty, but not everyone sees it.' })
   summary: string;

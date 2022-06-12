@@ -15,11 +15,11 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User, UserDocument } from 'src/schemas/user.schema';
+import { User, UserDocument } from 'src/user/schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { ObjectIdDto } from 'src/dtos/objectid.dto';
-import { UserCreateDto } from 'src/dtos/user-create.dto';
+import { ObjectIdDto } from 'src/identity/dtos/objectid.dto';
+import { UserCreateDto } from 'src/user/dtos/user-create.dto';
 
 @ApiTags('user')
 @Controller('user')

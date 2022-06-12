@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { User } from 'src/schemas/user.schema';
-import { Post } from 'src/schemas/post.schema';
+import { User } from 'src/user/schemas/user.schema';
+import { Post } from 'src/user/schemas/post.schema';
 
 export type CommentDocument = Comment & Document;
 
@@ -14,7 +14,7 @@ export class Comment {
   createdAt: Date;
 
   @Prop({ required: true })
-  message: String;
+  message: string;
 
   @Prop({ required: true })
   post: Post;

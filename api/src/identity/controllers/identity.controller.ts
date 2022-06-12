@@ -8,9 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiConflictResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -20,16 +22,13 @@ import {
 import { PasswordService } from 'src/services/password.service';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { FilterQuery, Model } from 'mongoose';
-import {
-  Identity,
-  IdentityDocument,
-  IdentityType,
-} from 'src/schemas/identity.schema';
-import { CredentialsDto } from 'src/dtos/credentials.dto';
-import { IdentitySearchResultDto } from 'src/dtos/identity-search.dto';
-import { IdentityMapperInterceptor } from 'src/interceptors/identity-mapper.interceptor';
-import { IdentitySearchMapperInterceptor } from 'src/interceptors/identity-search-mapper.interceptor';
-import { ObjectIdDto } from 'src/dtos/objectid.dto';
+import { Identity, IdentityDocument } from '../schemas/identity.schema';
+import { CredentialsDto } from '../dtos/credentials.dto';
+import { IdentitySearchResultDto } from '../dtos/identity-search.dto';
+import { IdentityMapperInterceptor } from '../interceptors/identity-mapper.interceptor';
+import { IdentitySearchMapperInterceptor } from '../interceptors/identity-search-mapper.interceptor';
+import { ObjectIdDto } from '../dtos/objectid.dto';
+import { MongoExceptionFilter } from '../filters/mongo-exception.filter';
 
 @ApiTags('identity')
 @Controller('identity')
@@ -45,7 +44,7 @@ export class IdentityController {
   @ApiOkResponse({ type: IdentitySearchResultDto })
   @UseInterceptors(IdentitySearchMapperInterceptor)
   async findAll(@Query('email') email?: string) {
-    const filter: FilterQuery<{email?: string}> = email ? { email } : {};
+    const filter: FilterQuery<{ email?: string }> = email ? { email } : {};
     const docs = await this.identity.find(filter).lean();
     return docs;
   }
@@ -82,16 +81,17 @@ export class IdentityController {
   }
 
   @Post()
+  @ApiConflictResponse()
   @ApiOkResponse()
+  @UseFilters(MongoExceptionFilter)
   @UseInterceptors(IdentityMapperInterceptor)
   async create(@Body() identity: CredentialsDto) {
     const { email, password } = identity;
     const hash = await this.pwSvc.hash(password);
     const doc = await this.identity.create({
-      _id: new mongoose.Types.ObjectId(),
+      id: new mongoose.Types.ObjectId(),
+      _password: hash,
       email,
-      password: hash,
-      type: IdentityType.Local,
     });
     return doc;
   }

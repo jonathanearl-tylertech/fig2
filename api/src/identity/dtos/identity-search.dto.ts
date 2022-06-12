@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Identity } from 'src/schemas/identity.schema';
+import { Identity } from '../schemas/identity.schema';
 
 export class IdentitySearchResultDto {
   @ApiProperty({ type: Number })
