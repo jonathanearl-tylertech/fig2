@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId } from 'class-validator';
+import { IsUUID } from 'class-validator';
 
-export class ObjectIdDto {
+export class IdDto {
   @ApiProperty({ type: String })
-  @IsMongoId()
+  @IsUUID()
   id: string;
 }

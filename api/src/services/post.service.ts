@@ -5,9 +5,9 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
-import { Post, PostDocument } from 'src/user/schemas/post.schema';
+import { Post, PostDocument } from '../schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument } from 'src/user/schemas/comment.schema';
+import { Comment, CommentDocument } from 'src/schemas/comment.schema';
 import { User, UserDocument } from 'src/user/schemas/user.schema';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class PostService {
       author: author._id,
       description,
     });
-    author.posts.push(post._id);
+    // author.posts.push(post._id);
     await author.save();
     return post.toObject();
   };

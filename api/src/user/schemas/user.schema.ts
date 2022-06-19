@@ -1,38 +1,31 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
+import { Identity } from 'src/identity/schemas/identity.schema';
+import { v4 as uuidv4 } from 'uuid';
 
 export type UserDocument = User & Document;
 
-@Schema()
-export class User {
+@Schema({ timestamps: true })
+export class User extends Document {
   @Prop()
-  _id: Types.ObjectId;
-
-  @Prop({ default: () => Date.now() })
   createdAt: Date;
 
-  @Prop({ default: false })
-  disabled: boolean;
+  @Prop({ type: String, required: true, default: () => uuidv4() })
+  _id: string;
 
-  @Prop({ default: '🐢' })
+  @Prop({ type: String, ref: 'Identity' })
+  identity: Identity;
+
+  @Prop({ type: String, maxlength: 7 })
   icon: string;
 
-  @Prop()
-  identity: Types.ObjectId;
-
-  @Prop()
+  @Prop({ type: Date })
   modifedAt: Date;
 
-  @Prop()
-  posts: Types.ObjectId[];
-
-  @Prop({ default: 'Everything has beauty, but not everyone sees it.' })
+  @Prop({ type: String, maxlength: 256 })
   summary: string;
 
-  @Prop({
-    required: true,
-    unique: true,
-  })
+  @Prop({ type: String, required: true, indexed: true, unique: true, minLength: 1, maxLength: 25 })
   username: string;
 }
 

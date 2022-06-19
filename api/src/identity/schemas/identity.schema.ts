@@ -1,41 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose, Transform } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { User } from 'src/user/schemas/user.schema';
 import { v4 as uuidv4 } from 'uuid';
 
 export type IdentityDocument = Identity & Document;
-export enum IdentityStatus {
-  Staged,
-  Activated,
-  Suspended,
-}
-export const IDENTITY_STATUS = {
-  0: 'STAGED',
-  1: 'ACTIVATED',
-  2: 'SUSPENDED',
-};
 
 @Schema()
-export class Identity {
-  @Prop({ required: true })
-  @Exclude()
-  _password: string;
-
-  @Prop({ required: true, unique: true })
-  @Expose()
-  @ApiProperty({ type: String })
+export class Identity extends Document {
+  @Prop({ type: String, required: true, index: true, unique: true })
   email: string;
 
-  @Prop({ required: true, default: () => uuidv4(), index: true })
-  @Expose()
-  @Transform((value) => value.obj._id.toString())
-  @ApiProperty({ type: String })
-  id: string;
+  @Prop({ type: String, required: true, default: () => uuidv4() })
+  _id: string;
 
-  @Prop({ required: true, default: IdentityStatus.Activated })
-  @Exclude()
-  status: IdentityStatus;
+  @Prop({ type: String, required: true })
+  password: string;
+
+  @Prop({type: String, ref: 'User'})
+  user: User
 }
 
 export const IdentitySchema = SchemaFactory.createForClass(Identity);

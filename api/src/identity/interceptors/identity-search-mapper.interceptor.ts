@@ -7,7 +7,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { IdentitySearchResultDto } from '../dtos/identity-search.dto';
+import { IdentitySearchResultDto } from '../dtos/identity-search-result.dto';
 import { Identity } from '../schemas/identity.schema';
 
 @Injectable()

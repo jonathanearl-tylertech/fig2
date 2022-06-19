@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -9,7 +10,6 @@ import {
   Post,
   Query,
   UseFilters,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -19,79 +19,81 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { PasswordService } from 'src/services/password.service';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { Identity, IdentityDocument } from '../schemas/identity.schema';
 import { CredentialsDto } from '../dtos/credentials.dto';
-import { IdentitySearchResultDto } from '../dtos/identity-search.dto';
-import { IdentityMapperInterceptor } from '../interceptors/identity-mapper.interceptor';
-import { IdentitySearchMapperInterceptor } from '../interceptors/identity-search-mapper.interceptor';
-import { ObjectIdDto } from '../dtos/objectid.dto';
+import { IdentitySearchResultDto } from '../dtos/identity-search-result.dto';
 import { MongoExceptionFilter } from '../filters/mongo-exception.filter';
+import { IdDto } from '../dtos/id.dto';
+import { PasswordService } from '../services/password.service';
+import { IdentitySearchRequestDto } from '../dtos/identity-search-request.dto';
 
 @ApiTags('identity')
 @Controller('identity')
 export class IdentityController {
   constructor(
-    @InjectModel(Identity.name) private identity: Model<IdentityDocument>,
-    private readonly pwSvc: PasswordService,
+    @InjectModel(Identity.name) private readonly identity: Model<IdentityDocument>,
+    private readonly passwordService: PasswordService,
   ) {}
 
   @Get()
   @ApiQuery({ name: 'email', type: String, required: false })
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: IdentitySearchResultDto })
-  @UseInterceptors(IdentitySearchMapperInterceptor)
-  async findAll(@Query('email') email?: string) {
-    const filter: FilterQuery<{ email?: string }> = email ? { email } : {};
-    const docs = await this.identity.find(filter).lean();
+  async findAll(@Query() query: IdentitySearchRequestDto) {
+    const docs = await this.identity.find(query).populate('user').lean();
     return docs;
   }
 
   @Get(':id')
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: Identity })
-  @UseInterceptors(IdentityMapperInterceptor)
-  async findOne(@Param() params: ObjectIdDto) {
+  async findOne(@Param() params: IdDto) {
     const { id } = params;
-    const doc = await this.identity.findById(id);
-    if (!doc) throw new NotFoundException();
+    const doc = await this.identity.findOne({ id });
+    if (!doc)
+      throw new NotFoundException();
     return doc;
   }
 
   @Delete(':id')
   @ApiNoContentResponse()
   @ApiNotFoundResponse()
-  async remove(@Param() params: ObjectIdDto) {
+  async remove(@Param() params: IdDto) {
     const { id } = params;
-    const doc = await this.identity.findByIdAndRemove(id);
-    if (!doc) throw new NotFoundException();
+    const doc = await this.identity.findOneAndRemove({id});
+    if (!doc)
+      throw new NotFoundException();
   }
 
   @Patch(':id')
   @ApiNotFoundResponse()
   @ApiOkResponse({ type: Identity })
-  @UseInterceptors(IdentityMapperInterceptor)
-  async update(@Param() params: ObjectIdDto, identity: Partial<Identity>) {
+  async update(@Param() params: IdDto, identity: Partial<Identity>) {
     const { id } = params;
     const doc = await this.identity.findOneAndUpdate({ id }, identity).lean();
-    if (!doc) throw new NotFoundException();
+    if (!doc)
+      throw new NotFoundException();
+
     return doc;
   }
 
   @Post()
   @ApiConflictResponse()
-  @ApiOkResponse()
+  @ApiOkResponse({ type: Identity })
   @UseFilters(MongoExceptionFilter)
-  @UseInterceptors(IdentityMapperInterceptor)
-  async create(@Body() identity: CredentialsDto) {
-    const { email, password } = identity;
-    const hash = await this.pwSvc.hash(password);
+  async create(@Body() body: CredentialsDto) {
+    const { email } = body;
+    const existing = await this.identity.findOne({email}).lean();
+    if (existing)
+      throw new ConflictException(`Email: '${email}' is in use.`);
+
+    const { password } = body;
+    const hash = await this.passwordService.hash(password);
     const doc = await this.identity.create({
-      id: new mongoose.Types.ObjectId(),
-      _password: hash,
       email,
+      password: hash,
     });
     return doc;
   }
