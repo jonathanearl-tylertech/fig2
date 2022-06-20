@@ -17,7 +17,7 @@ import { MongoExceptionFilter } from '../../filters/mongo-exception.filter';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express';
 
-@ApiTags('userinfo')
+@ApiTags('oauth')
 @Controller('oauth2/v1/userinfo')
 export class UserInfoController {
   private JWT_SIGNATURE_SECRET;

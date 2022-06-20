@@ -1,3 +1,3 @@
 export interface CodeSession {
-  sid: string;
+  uid: string;
 }

@@ -14,23 +14,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../../schemas/user.schema';
 import { MongoExceptionFilter } from '../../filters/mongo-exception.filter';
-import * as jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { TokenRequestDto } from 'src/dtos/token-request.dto';
-import { UserSessionService } from 'src/services/user-session.service';
 import { CodeSessionService } from 'src/services/code-session.service';
+import { JWTSignatureService } from 'src/services/jwt-signature.service';
 
-@ApiTags('token')
+@ApiTags('oauth')
 @Controller('oauth2/v1/token')
 export class TokenController {
-  private JWT_SIGNATURE_SECRET;
-
   constructor(
     private readonly codeSession: CodeSessionService,
+    private readonly jwt: JWTSignatureService,
     @InjectModel(User.name) private readonly user: Model<UserDocument>,
-  ) {
-    console.log(process.env.JWT_SIGNATURE_SECRET);
-  }
+  ) { }
 
   @Post()
   @ApiConflictResponse()
@@ -51,12 +47,12 @@ export class TokenController {
       throw new NotImplementedException(
         `grant_type must be 'authorization_code'`,
       );
-    
+
     const session = this.codeSession.get(code);
-    if(!session)
+    if (!session)
       throw new UnauthorizedException('code invalid')
 
-    const doc = await this.user.findOne({ id: session.sid }).lean();
+    const doc = await this.user.findOne({ id: session.uid }).lean();
     if (!doc) throw new NotFoundException();
 
     const idToken = {
@@ -68,6 +64,8 @@ export class TokenController {
       iat: Date.now(),
       auth_time: Date.now(),
     };
-    return jwt.sign(idToken, this.JWT_SIGNATURE_SECRET);
+
+    const jwt = await this.jwt.signJWT(idToken);
+    return jwt;
   }
 }
