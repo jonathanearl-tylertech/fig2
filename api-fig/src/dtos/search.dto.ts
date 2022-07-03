@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsAlpha, IsOptional, IsUUID, MaxLength, MinLength } from 'class-validator';
+import {
+  IsAlpha,
+  IsOptional,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SearchDto {
   @ApiProperty({ type: String })

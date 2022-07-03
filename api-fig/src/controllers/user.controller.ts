@@ -33,8 +33,8 @@ import { SearchDto as SearchDto } from '../dtos/search.dto';
 export class UserController {
   constructor(
     private readonly emoji: EmojiGeneratorService,
-    @InjectModel(User.name) private readonly user: Model<UserDocument>
-  ) { }
+    @InjectModel(User.name) private readonly user: Model<UserDocument>,
+  ) {}
 
   @Get('')
   @ApiOkResponse()
@@ -47,13 +47,9 @@ export class UserController {
   @ApiBadRequestResponse()
   @ApiOkResponse({ type: User })
   @ApiNotFoundResponse()
-  // @UseInterceptors(UserMapperInterceptor)
   async findOne(@Param() params: IdDto) {
     const { id } = params;
     const doc = await this.user.findOne({ id }).lean();
-    if (!doc)
-      throw new NotFoundException();
-
     return doc;
   }
 
@@ -64,8 +60,7 @@ export class UserController {
   async findByIdAndDelete(@Param() params: IdDto) {
     const { id } = params;
     const doc = await this.user.findOneAndDelete({ id }).lean();
-    if (!doc)
-      throw new NotFoundException();
+    if (!doc) throw new NotFoundException();
   }
 
   @Patch(':id')
@@ -73,16 +68,11 @@ export class UserController {
   @ApiOkResponse({ type: User })
   @ApiNotFoundResponse()
   @UseFilters(MongoExceptionFilter)
-  // @UseInterceptors(UserMapperInterceptor)
-  async findOneAndUpdate(
-    @Param() params: IdDto,
-    @Body() user: UserUpdateDto,
-  ) {
+  async findOneAndUpdate(@Param() params: IdDto, @Body() user: UserUpdateDto) {
     const { id } = params;
     const { icon, summary, username } = user;
     const doc = await this.user.findOne({ id });
-    if (!doc)
-      throw new NotFoundException();
+    if (!doc) throw new NotFoundException();
 
     doc.icon = icon;
     doc.username = username;

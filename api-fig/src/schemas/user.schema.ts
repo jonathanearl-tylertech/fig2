@@ -27,7 +27,13 @@ export class User extends Document {
   @Prop({ type: String, maxlength: 256 })
   summary: string;
 
-  @Prop({ type: String, required: true, indexed: true, minLength: 1, maxLength: 25 })
+  @Prop({
+    type: String,
+    required: true,
+    indexed: true,
+    minLength: 1,
+    maxLength: 25,
+  })
   username: string;
 }
 

@@ -8,7 +8,7 @@ import { User, UserSchema } from './schemas/user.schema';
   controllers: [UserController],
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema },]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forRoot('mongodb://localhost/fig'),
   ],
 })
