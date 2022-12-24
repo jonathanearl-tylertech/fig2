@@ -55,7 +55,7 @@ export class PostService {
     return await this.post
       .find(query)
       .lean()
-      .sort((a, b) => b.createdAt.valueOf() - a.createdAt.valueOf());
+      .sort("createdAt");
   };
 
   createComment = async (postId: string, ownerId: string, message: string) => {
